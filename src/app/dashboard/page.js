@@ -28,9 +28,9 @@ export default function DashboardRedirectPage() {
       try {
         const response = await getActiveSubscription();
         const hasActive = Boolean(response?.data);
-        router.replace(hasActive ? '/templates' : '/plans');
+        router.replace(hasActive ? '/templates' : '/profile/create');
       } catch (err) {
-        router.replace('/plans');
+        router.replace('/profile/create');
       } finally {
         setChecking(false);
       }

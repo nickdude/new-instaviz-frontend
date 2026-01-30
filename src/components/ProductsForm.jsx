@@ -119,7 +119,7 @@ export function ProductsForm({ onSubmit, onBack, initialData = {} }) {
                 <div className="flex items-center gap-3 px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-400 transition">
                   <Image size={20} className="text-gray-400" />
                   <span className="text-sm text-gray-600">
-                    {product.image ? product.image.name : 'Click to upload image'}
+                    {product.image ? (product.image instanceof File ? product.image.name : 'Current image uploaded') : 'Click to upload image'}
                   </span>
                 </div>
                 <input
@@ -157,7 +157,7 @@ export function ProductsForm({ onSubmit, onBack, initialData = {} }) {
                 <div className="flex items-center gap-3 px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-400 transition">
                   <FileText size={20} className="text-gray-400" />
                   <span className="text-sm text-gray-600">
-                    {product.pdf ? product.pdf.name : 'Click to upload PDF'}
+                    {product.pdf ? (product.pdf instanceof File ? product.pdf.name : 'Current PDF uploaded') : 'Click to upload PDF'}
                   </span>
                 </div>
                 <input

@@ -172,7 +172,7 @@ export function ContactInfoForm({ onSubmit, onBack, initialData = {}, profileTyp
               <div className="flex items-center gap-3 px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-400 transition">
                 <Camera size={20} className="text-gray-400" />
                 <span className="text-sm text-gray-600">
-                  {formData.photo ? formData.photo.name : 'Click to upload photo'}
+                  {formData.photo ? (formData.photo instanceof File ? formData.photo.name : 'Current photo uploaded') : 'Click to upload photo'}
                 </span>
               </div>
               <input
@@ -194,7 +194,7 @@ export function ContactInfoForm({ onSubmit, onBack, initialData = {}, profileTyp
                 <div className="flex items-center gap-3 px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-400 transition">
                   <Camera size={20} className="text-gray-400" />
                   <span className="text-sm text-gray-600">
-                    {formData.companyLogo ? formData.companyLogo.name : 'Click to upload company logo'}
+                    {formData.companyLogo ? (formData.companyLogo instanceof File ? formData.companyLogo.name : 'Current logo uploaded') : 'Click to upload company logo'}
                   </span>
                 </div>
                 <input

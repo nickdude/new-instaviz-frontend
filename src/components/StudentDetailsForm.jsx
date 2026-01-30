@@ -52,7 +52,8 @@ export function StudentDetailsForm({ onSubmit, onBack, initialData = {} }) {
     const newErrors = {};
     if (!formData.aboutMe.trim()) newErrors.aboutMe = 'About Me is required';
     if (formData.skills.length === 0) newErrors.skills = 'Add at least one skill';
-    if (!formData.resumeFile) newErrors.resumeFile = 'Resume is required';
+    // Resume is optional in edit mode (initialData.resumeFile exists)
+    if (!formData.resumeFile && !initialData.resumeFile) newErrors.resumeFile = 'Resume is required';
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -136,7 +137,7 @@ export function StudentDetailsForm({ onSubmit, onBack, initialData = {} }) {
 
         <div>
           <label className="block text-sm font-medium text-gray-800 mb-2">
-            Resume (PDF) <span className="text-red-500">*</span>
+            Resume (PDF) {!initialData.resumeFile && <span className="text-red-500">*</span>}
           </label>
           <div className="flex items-center gap-3">
             <label className="flex-1 cursor-pointer">
@@ -144,7 +145,7 @@ export function StudentDetailsForm({ onSubmit, onBack, initialData = {} }) {
                 <FileText size={20} className="text-gray-400" />
                 <span className="text-sm text-gray-600">
                   {formData.resumeFile
-                    ? formData.resumeFile.name
+                    ? (formData.resumeFile instanceof File ? formData.resumeFile.name : 'Current resume uploaded')
                     : 'Click to upload resume (PDF)'}
                 </span>
               </div>

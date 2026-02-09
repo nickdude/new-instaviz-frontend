@@ -124,6 +124,7 @@ export default function EditProfilePage() {
         layout: profileData.layout,
         contactInfo: {
           name: profileData.contactInfo.name,
+          designation: profileData.contactInfo.designation,
           email: profileData.contactInfo.email,
           phone: profileData.contactInfo.phone,
           address: profileData.contactInfo.address,
@@ -132,7 +133,8 @@ export default function EditProfilePage() {
           facebook: profileData.contactInfo.facebook,
           instagram: profileData.contactInfo.instagram,
           twitter: profileData.contactInfo.twitter,
-          github: profileData.contactInfo.github
+          github: profileData.contactInfo.github,
+          photo: profileData.contactInfo.photo,
         },
       };
 

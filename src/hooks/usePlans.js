@@ -41,9 +41,16 @@ export function usePlans() {
     return await apiCall(`/api/plans${query}`);
   }, [apiCall]);
 
+  const cardTypeOptions = [
+    { value: 'physical', label: 'Physical Card', color: 'orange' },
+    { value: 'digital', label: 'Digital Card', color: 'blue' },
+    { value: 'NFC', label: 'NFC Card', color: 'purple' }
+  ];
+
   return {
     loading,
     error,
     getPlans,
+    cardTypeOptions,
   };
 }

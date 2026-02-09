@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useProfiles } from '@/hooks/useProfiles';
+import { UserNavbar } from '@/components/UserNavbar';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -96,8 +97,9 @@ export default function MyProfilesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white px-6 py-10">
-      <div className="mx-auto w-full max-w-6xl">
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
+      <UserNavbar />
+      <div className="mx-auto w-full max-w-6xl px-6 py-10">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>

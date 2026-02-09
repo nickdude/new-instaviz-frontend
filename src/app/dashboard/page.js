@@ -3,10 +3,12 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSubscriptions } from '@/hooks/useSubscriptions';
+import { useProfiles } from '@/hooks/useProfiles';
 
 export default function DashboardRedirectPage() {
   const router = useRouter();
   const { getActiveSubscription } = useSubscriptions();
+  const { getProfiles } = useProfiles();
   const [checking, setChecking] = useState(true);
 
   useEffect(() => {
@@ -26,9 +28,17 @@ export default function DashboardRedirectPage() {
       }
 
       try {
+        const profilesResponse = await getProfiles();
+        const profiles = profilesResponse?.data || [];
+
+        if (profiles.length === 0) {
+          router.replace('/profile/create');
+          return;
+        }
+
         const response = await getActiveSubscription();
         const hasActive = Boolean(response?.data);
-        router.replace(hasActive ? '/templates' : '/profile/create');
+        router.replace(hasActive ? '/templates' : '/plans');
       } catch (err) {
         router.replace('/profile/create');
       } finally {

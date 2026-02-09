@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTemplates } from '@/hooks/useTemplates';
+import { UserNavbar } from '@/components/UserNavbar';
 import { FormButton } from '@/components/FormButton';
 import { Card, CardContent } from '@/components/ui/card';
 import { FileImage } from 'lucide-react';
@@ -64,15 +65,16 @@ export default function TemplatesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white px-6 py-10">
-      <div className="mx-auto w-full max-w-5xl">
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
+      <UserNavbar />
+      <div className="mx-auto w-full max-w-5xl px-6 py-10">
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Choose a Template</h1>
             <p className="mt-2 text-sm text-gray-500">Start building your digital or physical card.</p>
           </div>
-          <FormButton onClick={() => router.push('/profile/create')} className="w-auto px-5">
-            Create New
+          <FormButton onClick={() => router.push('/cards')} className="w-auto px-5">
+            My Cards
           </FormButton>
         </div>
 

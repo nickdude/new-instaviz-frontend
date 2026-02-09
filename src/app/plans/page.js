@@ -49,6 +49,7 @@ export default function PlansPage() {
       price: plan.price?.rupees ?? plan.price?.dollar ?? '0',
       billingNote: plan.durationDays ? `Billed every ${plan.durationDays} days` : '',
       subNote: plan.description,
+      cardTypes: plan.cardTypes || [],
       badgeText: plan.isPopular ? 'POPULAR' : '',
       currencySymbol: '₹',
       currency: 'rupees',

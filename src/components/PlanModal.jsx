@@ -11,6 +11,7 @@ export function PlanModal({ isOpen, onClose, onSubmit, plan = null, loading = fa
     description: '',
     durationDays: 30,
     price: { rupees: 0, dollar: 0 },
+    cardTypes: [],
     features: [],
   });
   const [featureInput, setFeatureInput] = useState('');
@@ -26,6 +27,7 @@ export function PlanModal({ isOpen, onClose, onSubmit, plan = null, loading = fa
           rupees: plan.price?.rupees || 0,
           dollar: plan.price?.dollar || 0,
         },
+        cardTypes: Array.isArray(plan.cardTypes) ? [...plan.cardTypes] : [],
         features: Array.isArray(plan.features) ? [...plan.features] : [],
       });
     } else if (!plan && isOpen) {
@@ -34,6 +36,7 @@ export function PlanModal({ isOpen, onClose, onSubmit, plan = null, loading = fa
         description: '',
         durationDays: 30,
         price: { rupees: 0, dollar: 0 },
+        cardTypes: [],
         features: [],
       });
     }
@@ -53,6 +56,16 @@ export function PlanModal({ isOpen, onClose, onSubmit, plan = null, loading = fa
       setFormData((prev) => ({ ...prev, [name]: value }));
     }
     setErrors((prev) => ({ ...prev, [name]: '' }));
+  };
+
+  const toggleCardType = (type) => {
+    setFormData((prev) => ({
+      ...prev,
+      cardTypes: prev.cardTypes.includes(type)
+        ? prev.cardTypes.filter((t) => t !== type)
+        : [...prev.cardTypes, type],
+    }));
+    setErrors((prev) => ({ ...prev, cardTypes: '' }));
   };
 
   const addFeature = () => {
@@ -79,6 +92,7 @@ export function PlanModal({ isOpen, onClose, onSubmit, plan = null, loading = fa
     if (formData.durationDays < 1) newErrors.durationDays = 'Duration must be at least 1 day';
     if (formData.price.rupees < 0) newErrors.priceRupees = 'Price must be positive';
     if (formData.price.dollar < 0) newErrors.priceDollar = 'Price must be positive';
+    if (formData.cardTypes.length === 0) newErrors.cardTypes = 'Select at least one card type';
     if (formData.features.length === 0) newErrors.features = 'Add at least one feature';
 
     setErrors(newErrors);
@@ -153,6 +167,38 @@ export function PlanModal({ isOpen, onClose, onSubmit, plan = null, loading = fa
                 step="0.01"
                 required
               />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-800 mb-2">
+                Card Types
+                {errors.cardTypes && <span className="text-red-500 ml-1">*</span>}
+              </label>
+              <div className="flex flex-wrap gap-3 mb-3">
+                {[
+                  { value: 'physical', label: 'Physical Card', color: 'orange' },
+                  { value: 'digital', label: 'Digital Card', color: 'blue' },
+                  { value: 'NFC', label: 'NFC Card', color: 'purple' }
+                ].map((type) => {
+                  const isSelected = formData.cardTypes.includes(type.value);
+                  const colorClasses = {
+                    orange: isSelected ? 'bg-orange-100 border-orange-700 text-orange-700' : 'bg-white border-orange-200 text-orange-700',
+                    blue: isSelected ? 'bg-blue-100 border-blue-700 text-blue-700' : 'bg-white border-blue-200 text-blue-700',
+                    purple: isSelected ? 'bg-purple-100 border-purple-700 text-purple-700' : 'bg-white border-purple-200 text-purple-700'
+                  };
+                  return (
+                    <button
+                      key={type.value}
+                      type="button"
+                      onClick={() => toggleCardType(type.value)}
+                      className={`px-4 py-2 rounded-lg border-2 font-medium text-sm transition ${colorClasses[type.color]}`}
+                    >
+                      {isSelected ? '✓ ' : ''}{type.label}
+                    </button>
+                  );
+                })}
+              </div>
+              {errors.cardTypes && <p className="text-sm text-red-500 mb-4">{errors.cardTypes}</p>}
             </div>
 
             <div>

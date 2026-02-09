@@ -12,7 +12,7 @@ import { EnquiryFormSetup } from '@/components/EnquiryFormSetup';
 
 export default function CreateProfilePage() {
   const router = useRouter();
-    const { createProfile, loading: saving } = useProfiles();
+  const { createProfile, loading: saving } = useProfiles();
   const [step, setStep] = useState(1);
   const [profileData, setProfileData] = useState({
     profileType: '',
@@ -81,25 +81,27 @@ export default function CreateProfilePage() {
     setStep(99); // Final step
   };
 
-    const handleComplete = async () => {
-      try {
-        // Prepare data for API
-        const apiData = {
-          profileType: profileData.profileType,
-          layout: profileData.layout,
-          contactInfo: {
-            name: profileData.contactInfo.name,
-            email: profileData.contactInfo.email,
-            phone: profileData.contactInfo.phone,
-            address: profileData.contactInfo.address,
-            website: profileData.contactInfo.website,
-            linkedin: profileData.contactInfo.linkedin,
-            facebook: profileData.contactInfo.facebook,
-            instagram: profileData.contactInfo.instagram,
-            twitter: profileData.contactInfo.twitter,
-            github: profileData.contactInfo.github
-          },
-        };
+  const handleComplete = async () => {
+    try {
+      // Prepare data for API
+      const apiData = {
+        profileType: profileData.profileType,
+        layout: profileData.layout,
+        contactInfo: {
+          name: profileData.contactInfo.name,
+          designation: profileData.contactInfo.designation,
+          email: profileData.contactInfo.email,
+          phone: profileData.contactInfo.phone,
+          address: profileData.contactInfo.address,
+          website: profileData.contactInfo.website,
+          linkedin: profileData.contactInfo.linkedin,
+          facebook: profileData.contactInfo.facebook,
+          instagram: profileData.contactInfo.instagram,
+          twitter: profileData.contactInfo.twitter,
+          github: profileData.contactInfo.github,
+          photo: profileData.contactInfo.photo,
+        },
+      };
 
         // Add professional-specific data
         if (profileData.profileType === 'professional') {
@@ -143,12 +145,12 @@ export default function CreateProfilePage() {
           if (product.pdf) formData.append('productPdfs', product.pdf);
         });
 
-        await createProfile(formData);
-        router.push('/plans'); // Redirect to plans page
-      } catch (err) {
-        console.error('Failed to create profile:', err);
-        alert('Failed to create profile. Please try again.');
-      }
+      await createProfile(formData);
+      router.push('/plans'); // Redirect to plans page
+    } catch (err) {
+      console.error('Failed to create profile:', err);
+      alert('Failed to create profile. Please try again.');
+    }
   };
 
   return (

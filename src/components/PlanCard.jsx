@@ -4,11 +4,13 @@ import { FormButton } from '@/components/FormButton';
 import { Badge } from '@/components/ui/badge';
 
 export function PlanCard({
+  id,
   title,
   price,
   billingNote,
   subNote,
   badgeText,
+  cardTypes = [],
   description,
   onSelect = () => {},
   buttonText = 'Continue',
@@ -30,6 +32,27 @@ export function PlanCard({
           {billingNote && <span className="text-sm text-gray-500">{billingNote}</span>}
         </div>
         {subNote && <p className="mt-2 text-sm text-gray-500">{subNote}</p>}
+        
+        {cardTypes && cardTypes.length > 0 && (
+          <div className="mt-3 flex flex-wrap gap-2">
+            {cardTypes.map((type) => {
+              const typeColors = {
+                physical: 'bg-orange-100 text-orange-700 border-orange-200',
+                digital: 'bg-blue-100 text-blue-700 border-blue-200',
+                NFC: 'bg-purple-100 text-purple-700 border-purple-200'
+              };
+              return (
+                <span
+                  key={type}
+                  className={`text-xs font-medium px-2 py-1 rounded border ${typeColors[type] || 'bg-gray-100 text-gray-700 border-gray-200'}`}
+                >
+                  {type}
+                </span>
+              );
+            })}
+          </div>
+        )}
+        
         {description && <p className="mt-4 text-sm text-gray-500">{description}</p>}
       </div>
       <div className="px-6 pb-6">

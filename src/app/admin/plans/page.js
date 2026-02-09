@@ -144,6 +144,27 @@ export default function AdminPlansPage() {
                   </div>
 
                   <div>
+                    <p className="text-xs font-medium text-gray-500 uppercase">Card Types</p>
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      {plan.cardTypes?.map((type) => {
+                        const typeColors = {
+                          physical: 'bg-orange-100 text-orange-700 border-orange-200',
+                          digital: 'bg-blue-100 text-blue-700 border-blue-200',
+                          NFC: 'bg-purple-100 text-purple-700 border-purple-200'
+                        };
+                        return (
+                          <span
+                            key={type}
+                            className={`text-xs font-medium px-2 py-1 rounded border ${typeColors[type] || 'bg-gray-100 text-gray-700 border-gray-200'}`}
+                          >
+                            {type}
+                          </span>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  <div>
                     <p className="text-xs font-medium text-gray-500 uppercase">Features</p>
                     <ul className="mt-2 space-y-1">
                       {plan.features?.slice(0, 2).map((feature, i) => (

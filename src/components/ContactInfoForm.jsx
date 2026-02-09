@@ -8,6 +8,7 @@ import { Mail, Phone, User, MapPin, Linkedin, Globe, Github, Camera, Facebook, I
 export function ContactInfoForm({ onSubmit, onBack, initialData = {}, profileType = 'student' }) {
   const [formData, setFormData] = useState({
     name: initialData.name || '',
+    designation: initialData.designation || '',
     email: initialData.email || '',
     phone: initialData.phone || '',
     address: initialData.address || '',
@@ -41,11 +42,37 @@ export function ContactInfoForm({ onSubmit, onBack, initialData = {}, profileTyp
 
   const validate = () => {
     const newErrors = {};
-    if (!formData.name.trim()) newErrors.name = 'Name is required';
-    if (!formData.email.trim()) newErrors.email = 'Email is required';
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email))
+    
+    // Mandatory fields (those with asterisks)
+    if (!formData.name || !formData.name.trim()) {
+      newErrors.name = 'Full Name is required';
+    }
+    
+    if (!formData.designation || !formData.designation.trim()) {
+      newErrors.designation = 'Designation is required';
+    }
+    
+    if (!formData.email || !formData.email.trim()) {
+      newErrors.email = 'Email is required';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       newErrors.email = 'Invalid email format';
-    if (!formData.phone.trim()) newErrors.phone = 'Phone is required';
+    }
+    
+    if (!formData.phone || !formData.phone.trim()) {
+      newErrors.phone = 'Phone is required';
+    }
+    
+    if (!formData.address || !formData.address.trim()) {
+      newErrors.address = 'Address is required';
+    }
+    
+    if (!formData.photo) {
+      newErrors.photo = 'Photo is required';
+    }
+    
+    if (!formData.companyLogo) {
+      newErrors.companyLogo = 'Organization Logo is required';
+    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -78,6 +105,17 @@ export function ContactInfoForm({ onSubmit, onBack, initialData = {}, profileTyp
         />
 
         <FormInput
+          label="Designation"
+          name="designation"
+          icon={User}
+          value={formData.designation}
+          onChange={handleChange}
+          error={errors.designation}
+          placeholder="e.g., Software Engineer, Manager"
+          required
+        />
+
+        <FormInput
           label="Email"
           type="email"
           name="email"
@@ -102,12 +140,14 @@ export function ContactInfoForm({ onSubmit, onBack, initialData = {}, profileTyp
         />
 
         <FormInput
-          label="Address (Optional)"
+          label="Address"
           name="address"
           icon={MapPin}
           value={formData.address}
           onChange={handleChange}
+          error={errors.address}
           placeholder="City, State, Country"
+          required
         />
 
         <FormInput
@@ -166,7 +206,7 @@ export function ContactInfoForm({ onSubmit, onBack, initialData = {}, profileTyp
 
           <div>
             <label className="block text-sm font-medium text-gray-800 mb-2">
-              {profileType === 'student' ? 'Your Photo' : 'Your Photo'} (Optional)
+              Your Photo <span className="text-red-500">*</span>
             </label>
             <label className="cursor-pointer">
               <div className="flex items-center gap-3 px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-400 transition">
@@ -185,28 +225,26 @@ export function ContactInfoForm({ onSubmit, onBack, initialData = {}, profileTyp
             {errors.photo && <p className="mt-1 text-sm text-red-500">{errors.photo}</p>}
           </div>
 
-          {profileType === 'professional' && (
-            <div>
-              <label className="block text-sm font-medium text-gray-800 mb-2">
-                Company Logo (Optional)
-              </label>
-              <label className="cursor-pointer">
-                <div className="flex items-center gap-3 px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-400 transition">
-                  <Camera size={20} className="text-gray-400" />
-                  <span className="text-sm text-gray-600">
-                    {formData.companyLogo ? (formData.companyLogo instanceof File ? formData.companyLogo.name : 'Current logo uploaded') : 'Click to upload company logo'}
-                  </span>
-                </div>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => handleFileChange(e, 'companyLogo')}
-                  className="hidden"
-                />
-              </label>
-              {errors.companyLogo && <p className="mt-1 text-sm text-red-500">{errors.companyLogo}</p>}
-            </div>
-          )}
+          <div>
+            <label className="block text-sm font-medium text-gray-800 mb-2">
+              Organization Logo <span className="text-red-500">*</span>
+            </label>
+            <label className="cursor-pointer">
+              <div className="flex items-center gap-3 px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-400 transition">
+                <Camera size={20} className="text-gray-400" />
+                <span className="text-sm text-gray-600">
+                  {formData.companyLogo ? (formData.companyLogo instanceof File ? formData.companyLogo.name : 'Current logo uploaded') : 'Click to upload logo'}
+                </span>
+              </div>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => handleFileChange(e, 'companyLogo')}
+                className="hidden"
+              />
+            </label>
+            {errors.companyLogo && <p className="mt-1 text-sm text-red-500">{errors.companyLogo}</p>}
+          </div>
       </div>
 
       <div className="flex gap-3">

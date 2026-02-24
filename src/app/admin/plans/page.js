@@ -119,8 +119,8 @@ export default function AdminPlansPage() {
                 <CardHeader className="pb-4">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
-                      <CardTitle className="text-lg">{plan.title}</CardTitle>
-                      <p className="text-xs text-gray-500 mt-1">{plan.durationDays} days</p>
+                      <CardTitle className="text-lg">{plan.title || plan.name || 'Untitled Plan'}</CardTitle>
+                      <p className="text-xs text-gray-500 mt-1">{plan.durationDays || plan.duration} days</p>
                     </div>
                     <Badge className={plan.isActive ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}>
                       {plan.isActive ? 'Active' : 'Inactive'}

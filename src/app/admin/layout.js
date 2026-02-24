@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Sidebar } from '@/components/Sidebar';
+import { AdminSidebar } from '@/components/AdminSidebar';
 
 export default function AdminLayout({ children }) {
   const router = useRouter();
@@ -21,8 +21,8 @@ export default function AdminLayout({ children }) {
   }, [router]);
 
   return (
-    <div className="flex h-screen bg-gray-50">
-      <Sidebar />
+    <div className="flex h-screen bg-slate-50">
+      <AdminSidebar />
       <main className="flex-1 overflow-auto">
         {children}
       </main>

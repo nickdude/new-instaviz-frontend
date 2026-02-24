@@ -30,6 +30,34 @@ export default function EditCardPage() {
     themeId: ''
   });
 
+  const selectedProfile = useMemo(() => {
+    return profiles.find((profile) => profile._id === formData.profileId) || null;
+  }, [profiles, formData.profileId]);
+
+  const filteredTemplates = useMemo(() => {
+    if (!selectedProfile) return [];
+
+    let filtered = templates;
+    const profileType = selectedProfile.profileType;
+    const layout = selectedProfile.layout;
+
+    if (profileType === 'student') {
+      filtered = filtered.filter((t) => t.template_id?.startsWith('student_'));
+    } else if (profileType === 'professional') {
+      filtered = filtered.filter((t) => t.template_id?.startsWith('pro_'));
+    }
+
+    if (layout === 'single') {
+      filtered = filtered.filter((t) => t.screen_count === 1);
+    } else if (layout === 'double' || layout === 'double-products' || layout === 'double-enquiry') {
+      filtered = filtered.filter((t) => t.screen_count === 2);
+    } else if (layout === 'triple') {
+      filtered = filtered.filter((t) => t.screen_count === 3);
+    }
+
+    return filtered;
+  }, [templates, selectedProfile]);
+
   useEffect(() => {
     const userRaw = typeof window !== 'undefined' ? localStorage.getItem('user') : null;
     if (!userRaw) {
@@ -48,6 +76,19 @@ export default function EditCardPage() {
       setFormData((prev) => ({ ...prev, themeId: '' }));
     }
   }, [formData.templateId]);
+
+  useEffect(() => {
+    if (!formData.profileId) return;
+    if (!formData.templateId) return;
+
+    const isTemplateValid = filteredTemplates.some(
+      (template) => template.template_id === formData.templateId
+    );
+
+    if (!isTemplateValid) {
+      setFormData((prev) => ({ ...prev, templateId: '', themeId: '' }));
+    }
+  }, [formData.profileId, formData.templateId, filteredTemplates]);
 
   const loadData = async () => {
     try {
@@ -130,57 +171,134 @@ export default function EditCardPage() {
           <p className="mt-2 text-sm text-gray-500">Update your card details and regenerate.</p>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 space-y-6">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Profile</label>
-            <select
-              name="profileId"
-              value={formData.profileId}
-              onChange={handleChange}
-              className="w-full rounded-lg border border-gray-200 px-4 py-3 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">Select profile</option>
-              {profiles.map((profile) => (
-                <option key={profile._id} value={profile._id}>
-                  {profile.contactInfo?.name || 'Profile'}
-                </option>
-              ))}
-            </select>
+        <div className="space-y-8">
+          <div className="rounded-2xl border border-gray-200 bg-white p-6">
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <p className="text-xs font-medium text-gray-500">Profile</p>
+                <p className="text-sm font-semibold text-gray-900">
+                  {selectedProfile?.contactInfo?.name || 'Profile'}
+                </p>
+              </div>
+              {selectedProfile && (
+                <span className="text-xs text-gray-500">
+                  {selectedProfile.profileType === 'student' ? 'Student' : 'Professional'} • {selectedProfile.layout}
+                </span>
+              )}
+            </div>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Template</label>
-            <select
-              name="templateId"
-              value={formData.templateId}
-              onChange={handleChange}
-              className="w-full rounded-lg border border-gray-200 px-4 py-3 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">Select template</option>
-              {templates.map((template) => (
-                <option key={template.template_id} value={template.template_id}>
-                  {template.label}
-                </option>
-              ))}
-            </select>
+          <div className="rounded-2xl border border-gray-200 bg-white p-6">
+            <div className="flex items-center justify-between mb-3">
+              <label className="block text-sm font-medium text-gray-700">Template</label>
+            </div>
+
+            {!formData.profileId ? (
+              <div className="rounded-lg border border-dashed border-gray-200 p-6 text-center text-sm text-gray-500">
+                Select a profile to see templates
+              </div>
+            ) : filteredTemplates.length === 0 ? (
+              <div className="rounded-lg border border-dashed border-gray-200 p-6 text-center text-sm text-gray-500">
+                No templates available for this profile
+              </div>
+            ) : (
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {filteredTemplates.map((template) => (
+                  <Card
+                    key={template.template_id}
+                    className={`cursor-pointer transition-all overflow-hidden ${
+                      formData.templateId === template.template_id
+                        ? 'border-blue-600 ring-2 ring-blue-600'
+                        : 'hover:shadow-lg'
+                    }`}
+                    onClick={() =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        templateId: template.template_id,
+                        themeId: ''
+                      }))
+                    }
+                  >
+                    <CardContent className="p-4 flex flex-col h-full">
+                      <div className="h-32 rounded-xl bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center overflow-hidden mb-3">
+                        <div className="text-center">
+                          <span className="text-xs text-gray-600 font-medium">
+                            {template.screen_count} {template.screen_count === 1 ? 'Screen' : 'Screens'}
+                          </span>
+                        </div>
+                      </div>
+                      <h3 className="text-sm font-semibold text-gray-900 flex-1">
+                        {template.label}
+                      </h3>
+                      <p className="mt-1 text-xs text-gray-500">
+                        {template.screens?.map((screen) => screen.charAt(0).toUpperCase() + screen.slice(1)).join(' + ')}
+                      </p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Theme</label>
-            <select
-              name="themeId"
-              value={formData.themeId}
-              onChange={handleChange}
-              className="w-full rounded-lg border border-gray-200 px-4 py-3 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              disabled={!formData.templateId}
-            >
-              <option value="">Select theme</option>
-              {themes.map((theme) => (
-                <option key={theme.theme_id} value={theme.theme_id}>
-                  {theme.name || theme.label || theme.theme_id}
-                </option>
-              ))}
-            </select>
+          <div className="rounded-2xl border border-gray-200 bg-white p-6">
+            <label className="block text-sm font-medium text-gray-700 mb-3">Theme</label>
+            {!formData.templateId ? (
+              <div className="rounded-lg border border-dashed border-gray-200 p-6 text-center text-sm text-gray-500">
+                Select a template to see themes
+              </div>
+            ) : themes.length === 0 ? (
+              <div className="rounded-lg border border-dashed border-gray-200 p-6 text-center text-sm text-gray-500">
+                No themes available for this template
+              </div>
+            ) : (
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {themes.map((theme) => {
+                  const previewImages = theme.previews || [];
+                  const previewImage = previewImages[0] || theme.thumbnail || theme.preview || null;
+                  const themeName = theme.description || theme.name || theme.label || 'Theme';
+
+                  return (
+                    <Card
+                      key={theme.theme_id}
+                      className={`cursor-pointer transition-all overflow-hidden ${
+                        formData.themeId === theme.theme_id
+                          ? 'border-blue-600 ring-2 ring-blue-600'
+                          : 'hover:shadow-lg'
+                      }`}
+                      onClick={() =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          themeId: theme.theme_id
+                        }))
+                      }
+                    >
+                      <CardContent className="p-4">
+                        <div className="h-32 rounded-xl overflow-hidden mb-3 border border-gray-200 bg-gray-50">
+                          {previewImage ? (
+                            <img
+                              src={previewImage}
+                              alt={themeName}
+                              className="w-full h-full object-contain"
+                            />
+                          ) : (
+                            <div
+                              className="w-full h-full"
+                              style={{ backgroundColor: theme.primary_color || theme.color || '#3B82F6' }}
+                            />
+                          )}
+                        </div>
+                        <h3 className="text-sm font-semibold text-gray-900">
+                          {themeName}
+                        </h3>
+                        <p className="mt-1 text-xs text-gray-500">
+                          ID: {theme.theme_id}
+                        </p>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
+            )}
           </div>
 
           <FormButton

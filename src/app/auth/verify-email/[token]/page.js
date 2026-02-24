@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useState, useEffect, useRef } from 'react';
+import { useRouter, useParams } from 'next/navigation';
 import { CheckCircle, AlertCircle } from 'lucide-react';
 import { FormContainer } from '@/components/FormContainer';
 import { FormButton } from '@/components/FormButton';
@@ -10,22 +10,30 @@ import { useAuth } from '@/hooks/useAuth';
 
 export default function VerifyEmailPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
+  const params = useParams();
   const { verifyEmail, loading } = useAuth();
   const [status, setStatus] = useState('verifying'); // verifying, success, error
   const [message, setMessage] = useState('');
   const [token, setToken] = useState('');
+  const hasVerified = useRef(false);
 
   useEffect(() => {
     const verifyToken = async () => {
+      // Prevent running twice in React StrictMode
+      if (hasVerified.current) return;
+      hasVerified.current = true;
+
       try {
-        const tokenParam = searchParams.get('token');
+        let tokenParam = params.token;
         
         if (!tokenParam) {
           setStatus('error');
           setMessage('Invalid or missing verification token. Please check your email for the correct link.');
           return;
         }
+
+        // Trim trailing '=' or other whitespace from token
+        tokenParam = tokenParam.trim().replace(/=$/, '');
 
         setToken(tokenParam);
         await verifyEmail(tokenParam);
@@ -38,7 +46,7 @@ export default function VerifyEmailPage() {
     };
 
     verifyToken();
-  }, [searchParams, verifyEmail]);
+  }, []);
 
   if (status === 'verifying') {
     return (

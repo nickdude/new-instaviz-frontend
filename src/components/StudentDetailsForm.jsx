@@ -5,6 +5,14 @@ import { FormInput } from '@/components/FormInput';
 import { FormButton } from '@/components/FormButton';
 import { FileText, Plus, X } from 'lucide-react';
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5002';
+
+const getFullFileUrl = (filePath) => {
+  if (!filePath) return null;
+  if (filePath.startsWith('http')) return filePath; // Already a full URL
+  return `${API_BASE_URL}${filePath}`; // Prepend base URL to relative path
+};
+
 export function StudentDetailsForm({ onSubmit, onBack, initialData = {} }) {
   const [formData, setFormData] = useState({
     aboutMe: initialData.aboutMe || '',
@@ -139,13 +147,29 @@ export function StudentDetailsForm({ onSubmit, onBack, initialData = {} }) {
           <label className="block text-sm font-medium text-gray-800 mb-2">
             Resume (PDF) {!initialData.resumeFile && <span className="text-red-500">*</span>}
           </label>
+          {formData.resumeFile && !(formData.resumeFile instanceof File) && (
+            <div className="mb-3 flex items-center gap-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
+              <FileText size={20} className="text-blue-600" />
+              <div className="text-sm text-gray-700">
+                <p className="font-medium">Current resume:</p>
+                <a 
+                  href={getFullFileUrl(formData.resumeFile)} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:text-blue-700 underline"
+                >
+                  {formData.resumeFile.substring(formData.resumeFile.lastIndexOf('/') + 1)}
+                </a>
+              </div>
+            </div>
+          )}
           <div className="flex items-center gap-3">
             <label className="flex-1 cursor-pointer">
               <div className="flex items-center gap-3 px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-400 transition">
                 <FileText size={20} className="text-gray-400" />
                 <span className="text-sm text-gray-600">
                   {formData.resumeFile
-                    ? (formData.resumeFile instanceof File ? formData.resumeFile.name : 'Current resume uploaded')
+                    ? (formData.resumeFile instanceof File ? formData.resumeFile.name : 'Click to replace resume')
                     : 'Click to upload resume (PDF)'}
                 </span>
               </div>

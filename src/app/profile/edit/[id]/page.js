@@ -45,17 +45,40 @@ export default function EditProfilePage() {
       setProfileData({
         profileType: profile.profileType || '',
         layout: profile.layout || '',
-        contactInfo: profile.contactInfo || {},
-        studentDetails: profile.studentDetails || {},
-        products: profile.products || [],
+        contactInfo: {
+          name: profile.contactInfo?.name || '',
+          designation: profile.contactInfo?.designation || '',
+          email: profile.contactInfo?.email || '',
+          phone: profile.contactInfo?.phone || '',
+          address: profile.contactInfo?.address || '',
+          website: profile.contactInfo?.website || '',
+          linkedin: profile.contactInfo?.linkedin || '',
+          facebook: profile.contactInfo?.facebook || '',
+          instagram: profile.contactInfo?.instagram || '',
+          twitter: profile.contactInfo?.twitter || '',
+          github: profile.contactInfo?.github || '',
+          photo: profile.contactInfo?.photo || null, // Existing photo URL string
+          companyLogo: profile.companyLogo || null, // Existing logo URL string
+        },
+        studentDetails: {
+          aboutMe: profile.studentDetails?.aboutMe || '',
+          skills: profile.studentDetails?.skills || [],
+          resumeFile: profile.studentDetails?.resumeFile || null, // Existing resume URL string
+        },
+        products: (profile.products || []).map(product => ({
+          name: product.name || '',
+          description: product.description || '',
+          image: product.image || null, // Existing image URL string
+          pdf: product.pdf || null, // Existing PDF URL string
+        })),
         enquiryForm: {
           enableEnquiry: profile.enquiryForm?.enabled ?? false,
           customMessage: profile.enquiryForm?.customMessage || '',
         },
       });
       
-      // Start from contact info step in edit mode
-      setStep(3);
+      // Start from profile type step (similar to create flow)
+      setStep(1);
     } catch (err) {
       console.error('Failed to load profile:', err);
       alert('Failed to load profile. Redirecting to profiles page.');
@@ -181,7 +204,7 @@ export default function EditProfilePage() {
       });
 
       await updateProfile(profileId, formData);
-      router.push('/profiles'); // Redirect to profiles page
+      router.push('/cards'); // Redirect to cards page after update
     } catch (err) {
       console.error('Failed to update profile:', err);
       alert('Failed to update profile. Please try again.');
@@ -214,16 +237,16 @@ export default function EditProfilePage() {
         <div className="mb-8">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs font-medium text-gray-500">
-              Step {step < 99 ? step - 2 : 4} of 4
+              Step {step < 99 ? step : step - 93} of {step < 99 ? 5 : 6}
             </span>
             <span className="text-xs font-medium text-blue-600">
-              {step < 99 ? Math.round(((step - 2) / 4) * 100) : 100}%
+              {step < 99 ? Math.round((step / 5) * 100) : 100}%
             </span>
           </div>
           <div className="w-full bg-gray-200 rounded-full h-2">
             <div
               className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-              style={{ width: step < 99 ? `${((step - 2) / 4) * 100}%` : '100%' }}
+              style={{ width: step < 99 ? `${(step / 5) * 100}%` : '100%' }}
             />
           </div>
         </div>
@@ -244,7 +267,7 @@ export default function EditProfilePage() {
             <ContactInfoForm
               profileType={profileData.profileType}
               onSubmit={handleContactInfoSubmit}
-              onBack={() => router.push('/profiles')}
+              onBack={() => setStep(2)}
               initialData={profileData.contactInfo}
             />
           )}
@@ -284,21 +307,13 @@ export default function EditProfilePage() {
                   Your profile changes are ready to be saved.
                 </p>
               </div>
-              <div className="flex gap-4">
-                <button
-                  onClick={() => router.push('/profiles')}
-                  className="flex-1 px-6 py-3 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleComplete}
-                  disabled={saving}
-                  className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition disabled:opacity-50"
-                >
-                  {saving ? 'Saving...' : 'Save Changes'}
-                </button>
-              </div>
+              <button
+                onClick={handleComplete}
+                disabled={saving}
+                className="w-full px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition disabled:opacity-50"
+              >
+                {saving ? 'Saving...' : 'Save Profile'}
+              </button>
             </div>
           )}
         </div>

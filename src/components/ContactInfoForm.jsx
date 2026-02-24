@@ -5,6 +5,14 @@ import { FormInput } from '@/components/FormInput';
 import { FormButton } from '@/components/FormButton';
 import { Mail, Phone, User, MapPin, Linkedin, Globe, Github, Camera, Facebook, Instagram, Twitter } from 'lucide-react';
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5002';
+
+const getFullImageUrl = (imagePath) => {
+  if (!imagePath) return null;
+  if (imagePath.startsWith('http')) return imagePath; // Already a full URL
+  return `${API_BASE_URL}${imagePath}`; // Prepend base URL to relative path
+};
+
 export function ContactInfoForm({ onSubmit, onBack, initialData = {}, profileType = 'student' }) {
   const [formData, setFormData] = useState({
     name: initialData.name || '',
@@ -208,11 +216,20 @@ export function ContactInfoForm({ onSubmit, onBack, initialData = {}, profileTyp
             <label className="block text-sm font-medium text-gray-800 mb-2">
               Your Photo <span className="text-red-500">*</span>
             </label>
+            {formData.photo && !(formData.photo instanceof File) && (
+              <div className="mb-3 flex gap-3">
+                <img src={getFullImageUrl(formData.photo)} alt="Current photo" className="w-24 h-24 rounded-lg object-cover border border-gray-200" />
+                <div className="text-sm text-gray-600">
+                  <p className="font-medium mb-1">Current photo:</p>
+                  <p>{formData.photo.substring(formData.photo.lastIndexOf('/') + 1)}</p>
+                </div>
+              </div>
+            )}
             <label className="cursor-pointer">
               <div className="flex items-center gap-3 px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-400 transition">
                 <Camera size={20} className="text-gray-400" />
                 <span className="text-sm text-gray-600">
-                  {formData.photo ? (formData.photo instanceof File ? formData.photo.name : 'Current photo uploaded') : 'Click to upload photo'}
+                  {formData.photo ? (formData.photo instanceof File ? formData.photo.name : 'Click to replace photo') : 'Click to upload photo'}
                 </span>
               </div>
               <input
@@ -229,11 +246,20 @@ export function ContactInfoForm({ onSubmit, onBack, initialData = {}, profileTyp
             <label className="block text-sm font-medium text-gray-800 mb-2">
               Organization Logo <span className="text-red-500">*</span>
             </label>
+            {formData.companyLogo && !(formData.companyLogo instanceof File) && (
+              <div className="mb-3 flex gap-3">
+                <img src={getFullImageUrl(formData.companyLogo)} alt="Current logo" className="w-24 h-24 rounded-lg object-cover border border-gray-200" />
+                <div className="text-sm text-gray-600">
+                  <p className="font-medium mb-1">Current logo:</p>
+                  <p>{formData.companyLogo.substring(formData.companyLogo.lastIndexOf('/') + 1)}</p>
+                </div>
+              </div>
+            )}
             <label className="cursor-pointer">
               <div className="flex items-center gap-3 px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-400 transition">
                 <Camera size={20} className="text-gray-400" />
                 <span className="text-sm text-gray-600">
-                  {formData.companyLogo ? (formData.companyLogo instanceof File ? formData.companyLogo.name : 'Current logo uploaded') : 'Click to upload logo'}
+                  {formData.companyLogo ? (formData.companyLogo instanceof File ? formData.companyLogo.name : 'Click to replace logo') : 'Click to upload logo'}
                 </span>
               </div>
               <input

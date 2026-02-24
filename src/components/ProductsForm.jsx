@@ -5,6 +5,14 @@ import { FormInput } from '@/components/FormInput';
 import { FormButton } from '@/components/FormButton';
 import { Plus, X, Image, FileText } from 'lucide-react';
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5002';
+
+const getFullFileUrl = (filePath) => {
+  if (!filePath) return null;
+  if (filePath.startsWith('http')) return filePath; // Already a full URL
+  return `${API_BASE_URL}${filePath}`; // Prepend base URL to relative path
+};
+
 export function ProductsForm({ onSubmit, onBack, initialData = {} }) {
   const [products, setProducts] = useState(initialData.products || []);
   const [errors, setErrors] = useState({});
@@ -115,11 +123,20 @@ export function ProductsForm({ onSubmit, onBack, initialData = {} }) {
               <label className="block text-sm font-medium text-gray-800 mb-2">
                 Product Image (Optional)
               </label>
+              {product.image && !(product.image instanceof File) && (
+                <div className="mb-3 flex gap-3">
+                  <img src={getFullFileUrl(product.image)} alt={`Product ${index + 1}`} className="w-20 h-20 rounded-lg object-cover border border-gray-200" />
+                  <div className="text-sm text-gray-600">
+                    <p className="font-medium mb-1">Current image:</p>
+                    <p>{product.image.substring(product.image.lastIndexOf('/') + 1)}</p>
+                  </div>
+                </div>
+              )}
               <label className="cursor-pointer">
                 <div className="flex items-center gap-3 px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-400 transition">
                   <Image size={20} className="text-gray-400" />
                   <span className="text-sm text-gray-600">
-                    {product.image ? (product.image instanceof File ? product.image.name : 'Current image uploaded') : 'Click to upload image'}
+                    {product.image ? (product.image instanceof File ? product.image.name : 'Click to replace image') : 'Click to upload image'}
                   </span>
                 </div>
                 <input
@@ -153,11 +170,27 @@ export function ProductsForm({ onSubmit, onBack, initialData = {} }) {
               <label className="block text-sm font-medium text-gray-800 mb-2">
                 Product PDF (Optional)
               </label>
+              {product.pdf && !(product.pdf instanceof File) && (
+                <div className="mb-3 flex items-center gap-3 p-3 bg-red-50 rounded-lg border border-red-200">
+                  <FileText size={20} className="text-red-600" />
+                  <div className="text-sm text-gray-700">
+                    <p className="font-medium">Current PDF:</p>
+                    <a 
+                      href={getFullFileUrl(product.pdf)} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-red-600 hover:text-red-700 underline"
+                    >
+                      {product.pdf.substring(product.pdf.lastIndexOf('/') + 1)}
+                    </a>
+                  </div>
+                </div>
+              )}
               <label className="cursor-pointer">
                 <div className="flex items-center gap-3 px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-400 transition">
                   <FileText size={20} className="text-gray-400" />
                   <span className="text-sm text-gray-600">
-                    {product.pdf ? (product.pdf instanceof File ? product.pdf.name : 'Current PDF uploaded') : 'Click to upload PDF'}
+                    {product.pdf ? (product.pdf instanceof File ? product.pdf.name : 'Click to replace PDF') : 'Click to upload PDF'}
                   </span>
                 </div>
                 <input

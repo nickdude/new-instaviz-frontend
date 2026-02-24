@@ -79,7 +79,7 @@ export default function RegisterPage() {
     }
 
     try {
-      await register(formData.name, formData.email, formData.password);
+      await register(formData.name, formData.email, formData.password, formData.phone);
       setSuccessMessage('Registration successful! Please verify your email to login.');
       setFormData({ name: '', email: '', phone: '', password: '', confirmPassword: '' });
       

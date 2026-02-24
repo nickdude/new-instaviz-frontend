@@ -46,11 +46,12 @@ export function useAuth() {
     }
   };
 
-  const register = async (name, email, password) => {
+  const register = async (name, email, password, phone = "") => {
     const response = await apiCall('/api/auth/register', 'POST', {
       name,
       email,
       password,
+      phone,
       userType: 'user',
     });
 

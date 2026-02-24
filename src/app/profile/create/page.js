@@ -146,7 +146,12 @@ export default function CreateProfilePage() {
         });
 
       await createProfile(formData);
-      router.push('/plans'); // Redirect to plans page
+      // Store profile type and layout for templates page
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('profileType', profileData.profileType);
+        localStorage.setItem('layout', profileData.layout);
+      }
+      router.push(`/templates?profileType=${profileData.profileType}&layout=${profileData.layout}`);
     } catch (err) {
       console.error('Failed to create profile:', err);
       alert('Failed to create profile. Please try again.');

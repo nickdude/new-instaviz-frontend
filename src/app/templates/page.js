@@ -1,18 +1,21 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useTemplates } from '@/hooks/useTemplates';
 import { UserNavbar } from '@/components/UserNavbar';
 import { FormButton } from '@/components/FormButton';
 import { Card, CardContent } from '@/components/ui/card';
-import { FileImage } from 'lucide-react';
+import { FileImage, ArrowLeft } from 'lucide-react';
 
 export default function TemplatesPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { getTemplates } = useTemplates();
   const [templates, setTemplates] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [profileType, setProfileType] = useState('');
+  const [layout, setLayout] = useState('');
 
   useEffect(() => {
     const userRaw = typeof window !== 'undefined' ? localStorage.getItem('user') : null;
@@ -20,9 +23,25 @@ export default function TemplatesPage() {
       router.replace('/auth/login');
       return;
     }
+
+    // Get profile type and layout from URL params or localStorage
+    const typeParam = searchParams.get('profileType');
+    const layoutParam = searchParams.get('layout');
+    const storedType = typeParam || (typeof window !== 'undefined' ? localStorage.getItem('profileType') : null);
+    const storedLayout = layoutParam || (typeof window !== 'undefined' ? localStorage.getItem('layout') : null);
+    
+    if (storedType) {
+      setProfileType(storedType);
+      localStorage.setItem('profileType', storedType);
+    }
+    
+    if (storedLayout) {
+      setLayout(storedLayout);
+      localStorage.setItem('layout', storedLayout);
+    }
     
     loadTemplates();
-  }, [router]);
+  }, [router, searchParams]);
 
   const loadTemplates = async () => {
     try {
@@ -36,18 +55,49 @@ export default function TemplatesPage() {
     }
   };
 
+  const getFilteredTemplates = () => {
+    let filtered = templates;
+
+    // Filter by profile type
+    if (profileType) {
+      if (profileType === 'student') {
+        filtered = filtered.filter(t => t.template_id.startsWith('student_'));
+      } else if (profileType === 'professional') {
+        filtered = filtered.filter(t => t.template_id.startsWith('pro_'));
+      }
+    }
+
+    // Filter by layout (based on screen count)
+    if (layout) {
+      if (layout === 'single') {
+        filtered = filtered.filter(t => t.screen_count === 1);
+      } else if (layout === 'double' || layout === 'double-products' || layout === 'double-enquiry') {
+        filtered = filtered.filter(t => t.screen_count === 2);
+      } else if (layout === 'triple') {
+        filtered = filtered.filter(t => t.screen_count === 3);
+      }
+    }
+
+    return filtered;
+  };
+
   const handleUseTemplate = (template) => {
-    // Store selected template and navigate to themes page
     if (typeof window !== 'undefined') {
       localStorage.setItem('selectedTemplate', JSON.stringify(template));
     }
     router.push(`/themes?template_id=${template.template_id}&template_label=${encodeURIComponent(template.label)}`);
   };
 
+  const filteredTemplates = getFilteredTemplates();
+  const typeLabel = profileType === 'student' ? 'Student' : profileType === 'professional' ? 'Professional' : 'All';
+  const layoutLabel = layout ? ` - ${layout.charAt(0).toUpperCase() + layout.slice(1).replace(/-/g, ' ')}` : '';
+  const screenCount = layout === 'single' ? ' (1 Screen)' : layout === 'double' || layout === 'double-products' || layout === 'double-enquiry' ? ' (2 Screens)' : layout === 'triple' ? ' (3 Screens)' : '';
+
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white px-6 py-10">
-        <div className="mx-auto w-full max-w-5xl">
+      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
+        <UserNavbar />
+        <div className="mx-auto w-full max-w-5xl px-6 py-10">
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {[1, 2, 3].map((i) => (
               <Card key={i} className="animate-pulse">
@@ -68,17 +118,31 @@ export default function TemplatesPage() {
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
       <UserNavbar />
       <div className="mx-auto w-full max-w-5xl px-6 py-10">
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Choose a Template</h1>
-            <p className="mt-2 text-sm text-gray-500">Start building your digital or physical card.</p>
+        {/* Header */}
+        <div className="mb-10">
+          <div className="flex items-start justify-between gap-6 mb-6">
+            <button
+              onClick={() => router.back()}
+              className="p-1.5 hover:bg-gray-100 rounded-lg transition flex-shrink-0 mt-1"
+              title="Go back"
+            >
+              <ArrowLeft size={20} className="text-gray-600" />
+            </button>
+            <div className="flex-1">
+              <h1 className="text-3xl font-semibold text-gray-900">{typeLabel} Templates{layoutLabel}</h1>
+              <p className="mt-1.5 text-sm text-gray-600">Choose a template to get started{screenCount}</p>
+            </div>
+            <FormButton 
+              onClick={() => router.push('/cards')} 
+              className="!w-auto !px-4 !py-2 text-sm whitespace-nowrap flex-shrink-0"
+              fullWidth={false}
+            >
+              My Cards
+            </FormButton>
           </div>
-          <FormButton onClick={() => router.push('/cards')} className="w-auto px-5">
-            My Cards
-          </FormButton>
         </div>
 
-        {templates.length === 0 ? (
+        {filteredTemplates.length === 0 ? (
           <Card>
             <CardContent className="p-12 text-center">
               <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -92,11 +156,11 @@ export default function TemplatesPage() {
             </CardContent>
           </Card>
         ) : (
-          <div className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {templates.map((template) => (
-              <Card key={template.template_id} className="hover:shadow-md transition-shadow">
-                <CardContent className="p-6">
-                  <div className="h-36 rounded-xl bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center overflow-hidden mb-4">
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {filteredTemplates.map((template) => (
+              <Card key={template.template_id} className="hover:shadow-lg transition-shadow overflow-hidden">
+                <CardContent className="p-6 flex flex-col h-full">
+                  <div className="h-40 rounded-xl bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center overflow-hidden mb-4">
                     <div className="text-center">
                       <FileImage size={48} className="text-blue-400 mx-auto mb-2" />
                       <span className="text-xs text-gray-600 font-medium">
@@ -104,15 +168,15 @@ export default function TemplatesPage() {
                       </span>
                     </div>
                   </div>
-                  <h3 className="text-base font-semibold text-gray-900">
+                  <h3 className="text-base font-semibold text-gray-900 flex-1">
                     {template.label}
                   </h3>
-                  <p className="mt-1 text-sm text-gray-500">
+                  <p className="mt-2 text-sm text-gray-500 mb-4">
                     {template.screens.map(screen => screen.charAt(0).toUpperCase() + screen.slice(1)).join(' + ')}
                   </p>
                   <FormButton 
                     onClick={() => handleUseTemplate(template)} 
-                    className="mt-4 w-full"
+                    className="w-full mt-auto"
                   >
                     Use Template
                   </FormButton>

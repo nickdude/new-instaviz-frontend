@@ -12,8 +12,9 @@ import { EnquiryFormSetup } from '@/components/EnquiryFormSetup';
 
 export default function CreateProfilePage() {
   const router = useRouter();
-  const { createProfile, loading: saving } = useProfiles();
+  const { createProfile, getProfiles, loading: saving } = useProfiles();
   const [step, setStep] = useState(1);
+  const [checkingProfile, setCheckingProfile] = useState(true);
   const [profileData, setProfileData] = useState({
     profileType: '',
     layout: '',
@@ -27,8 +28,26 @@ export default function CreateProfilePage() {
     const userRaw = typeof window !== 'undefined' ? localStorage.getItem('user') : null;
     if (!userRaw) {
       router.replace('/auth/login');
+      return;
     }
-  }, [router]);
+
+    const checkExistingProfile = async () => {
+      try {
+        const response = await getProfiles();
+        const profiles = response?.data || [];
+        if (profiles.length > 0) {
+          router.replace(`/profile/edit/${profiles[0]._id}`);
+          return;
+        }
+      } catch (err) {
+        console.error('Failed to check profiles:', err);
+      } finally {
+        setCheckingProfile(false);
+      }
+    };
+
+    checkExistingProfile();
+  }, [getProfiles, router]);
 
   const handleProfileTypeSelect = (type) => {
     setProfileData((prev) => ({ ...prev, profileType: type }));
@@ -161,26 +180,33 @@ export default function CreateProfilePage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white px-6 py-10">
       <div className="mx-auto w-full max-w-3xl">
-        {/* Progress Indicator */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-medium text-gray-500">
-              Step {step < 99 ? step : step - 93} of {step < 99 ? 5 : 6}
-            </span>
-            <span className="text-xs font-medium text-blue-600">
-              {step < 99 ? Math.round((step / 5) * 100) : 100}%
-            </span>
+        {checkingProfile ? (
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+            <p className="mt-4 text-gray-600">Checking your profile...</p>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-2">
-            <div
-              className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-              style={{ width: step < 99 ? `${(step / 5) * 100}%` : '100%' }}
-            />
-          </div>
-        </div>
+        ) : (
+          <>
+            {/* Progress Indicator */}
+            <div className="mb-8">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-medium text-gray-500">
+                  Step {step < 99 ? step : step - 93} of {step < 99 ? 5 : 6}
+                </span>
+                <span className="text-xs font-medium text-blue-600">
+                  {step < 99 ? Math.round((step / 5) * 100) : 100}%
+                </span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-2">
+                <div
+                  className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                  style={{ width: step < 99 ? `${(step / 5) * 100}%` : '100%' }}
+                />
+              </div>
+            </div>
 
-        {/* Step Content */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
+            {/* Step Content */}
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
           {step === 1 && <ProfileTypeSelector onSelect={handleProfileTypeSelect} />}
           
           {step === 2 && (
@@ -244,7 +270,9 @@ export default function CreateProfilePage() {
               </button>
             </div>
           )}
-        </div>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

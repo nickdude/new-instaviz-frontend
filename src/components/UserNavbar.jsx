@@ -3,22 +3,71 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { CreditCard, Edit3, LogOut, LayoutTemplate, ShoppingBag } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { useProfiles } from '@/hooks/useProfiles';
+import { useCards } from '@/hooks/useCards';
 
-const navItems = [
+const staticNavItems = [
   { label: 'Templates', href: '/templates', icon: LayoutTemplate },
-  { label: 'Update Card', href: '/cards', icon: CreditCard },
   { label: 'My Orders', href: '/orders', icon: ShoppingBag },
-  { label: 'Edit Profile', href: '/profiles', icon: Edit3 },
 ];
 
 export function UserNavbar() {
   const pathname = usePathname();
   const router = useRouter();
+  const { getProfiles } = useProfiles();
+  const { getCards } = useCards();
+  const [profileId, setProfileId] = useState(null);
+  const [cardId, setCardId] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Fetch profile
+        try {
+          const profileResponse = await getProfiles();
+          const profiles = profileResponse?.data || [];
+          if (profiles.length > 0) {
+            setProfileId(profiles[0]._id);
+          }
+        } catch (err) {
+          // Silently fail for profile fetch
+        }
+
+        // Fetch card
+        try {
+          const cardResponse = await getCards();
+          const cards = cardResponse?.data || [];
+          if (cards.length > 0) {
+            setCardId(cards[0]._id);
+          }
+        } catch (err) {
+          // Silently fail for card fetch
+        }
+      } catch (err) {
+        // Silently handle any other errors
+      }
+    };
+
+    fetchData();
+  }, [getProfiles, getCards]);
 
   const handleLogout = () => {
     localStorage.removeItem('authToken');
     localStorage.removeItem('user');
     router.push('/auth/login');
+  };
+
+  const handleEditProfile = () => {
+    if (profileId) {
+      router.push(`/profile/edit/${profileId}`);
+    }
+  };
+
+  const handleUpdateCard = () => {
+    if (cardId) {
+      router.push(`/cards/edit/${cardId}`);
+    }
   };
 
   return (
@@ -28,7 +77,7 @@ export function UserNavbar() {
           Instaviz
         </Link>
         <nav className="flex items-center gap-2">
-          {navItems.map((item) => {
+          {staticNavItems.map((item) => {
             const Icon = item.icon;
             const isActive = pathname?.startsWith(item.href);
             return (
@@ -46,6 +95,30 @@ export function UserNavbar() {
               </Link>
             );
           })}
+          <button
+            onClick={handleUpdateCard}
+            disabled={!cardId}
+            className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition ${
+              cardId
+                ? 'text-gray-600 hover:bg-gray-100 cursor-pointer'
+                : 'text-gray-400 cursor-not-allowed'
+            }`}
+          >
+            <CreditCard size={16} />
+            Update Card
+          </button>
+          <button
+            onClick={handleEditProfile}
+            disabled={!profileId}
+            className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition ${
+              profileId
+                ? 'text-gray-600 hover:bg-gray-100 cursor-pointer'
+                : 'text-gray-400 cursor-not-allowed'
+            }`}
+          >
+            <Edit3 size={16} />
+            Edit Profile
+          </button>
           <button
             onClick={handleLogout}
             className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 transition"

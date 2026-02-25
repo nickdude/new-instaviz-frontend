@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useProfiles } from '@/hooks/useProfiles';
+import { UserNavbar } from '@/components/UserNavbar';
 import { ProfileTypeSelector } from '@/components/ProfileTypeSelector';
 import { LayoutSelector } from '@/components/LayoutSelector';
 import { ContactInfoForm } from '@/components/ContactInfoForm';
@@ -163,7 +164,7 @@ export default function EditProfilePage() {
 
       // Add professional-specific data
       if (profileData.profileType === 'professional') {
-        apiData.companyLogo = null;
+        apiData.companyLogo = profileData.contactInfo.companyLogo;
         apiData.products = (profileData.products || []).map((product) => ({
           name: product.name,
           description: product.description
@@ -225,8 +226,10 @@ export default function EditProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white px-6 py-10">
-      <div className="mx-auto w-full max-w-3xl">
+    <>
+      <UserNavbar />
+      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white px-6 py-10">
+        <div className="mx-auto w-full max-w-3xl">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">Edit Profile</h1>
@@ -317,7 +320,8 @@ export default function EditProfilePage() {
             </div>
           )}
         </div>
+        </div>
       </div>
-    </div>
+    </>
   );
 }

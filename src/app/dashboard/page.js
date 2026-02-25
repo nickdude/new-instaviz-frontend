@@ -30,15 +30,14 @@ export default function DashboardRedirectPage() {
       try {
         const profilesResponse = await getProfiles();
         const profiles = profilesResponse?.data || [];
-
         if (profiles.length === 0) {
           router.replace('/profile/create');
           return;
         }
-
-        const response = await getActiveSubscription();
-        const hasActive = Boolean(response?.data);
-        router.replace(hasActive ? '/templates' : '/plans');
+        router.replace('/templates');
+        // const response = await getActiveSubscription();
+        // const hasActive = Boolean(response?.data);
+        // router.replace(hasActive ? '/templates' : '/plans');
       } catch (err) {
         router.replace('/profile/create');
       } finally {

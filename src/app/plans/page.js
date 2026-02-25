@@ -94,7 +94,16 @@ export default function PlansPage() {
               paymentResponse.razorpay_payment_id,
               paymentResponse.razorpay_signature
             );
-            router.push('/templates');
+            
+            // Check if user came from theme page
+            const templateInfo = typeof window !== 'undefined' ? sessionStorage.getItem('templateInfo') : null;
+            if (templateInfo) {
+              const { template_id, template_label } = JSON.parse(templateInfo);
+              sessionStorage.removeItem('templateInfo');
+              router.push(`/themes?template_id=${template_id}&template_label=${template_label}`);
+            } else {
+              router.push('/templates');
+            }
           } catch (err) {
             setPaymentError(err.message || 'Payment verification failed.');
           }

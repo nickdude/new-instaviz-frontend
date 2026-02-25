@@ -124,7 +124,7 @@ export default function CreateProfilePage() {
 
         // Add professional-specific data
         if (profileData.profileType === 'professional') {
-          apiData.companyLogo = null;
+          apiData.companyLogo = profileData.contactInfo.companyLogo;
           apiData.products = (profileData.products || []).map((product) => ({
             name: product.name,
             description: product.description

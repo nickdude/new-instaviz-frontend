@@ -57,6 +57,8 @@ export function ProductsForm({ onSubmit, onBack, initialData = {} }) {
         newErrors[`product${index}_name`] = 'Product name is required';
       if (!product.description.trim())
         newErrors[`product${index}_description`] = 'Description is required';
+      if (!product.image)
+        newErrors[`product${index}_image`] = 'Product image is required';
     });
 
     setErrors(newErrors);
@@ -121,7 +123,7 @@ export function ProductsForm({ onSubmit, onBack, initialData = {} }) {
 
             <div>
               <label className="block text-sm font-medium text-gray-800 mb-2">
-                Product Image (Optional)
+                Product Image <span className="text-red-500">*</span>
               </label>
               {product.image && !(product.image instanceof File) && (
                 <div className="mb-3 flex gap-3">
@@ -146,6 +148,11 @@ export function ProductsForm({ onSubmit, onBack, initialData = {} }) {
                   className="hidden"
                 />
               </label>
+              {errors[`product${index}_image`] && (
+                <p className="mt-1 text-sm text-red-500">
+                  {errors[`product${index}_image`]}
+                </p>
+              )}
             </div>
 
             <div>

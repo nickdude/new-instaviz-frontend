@@ -22,7 +22,7 @@ export default function ThemesPage() {
   const { getThemesByTemplateId } = useThemes();
   const { createCard } = useCards();
   const { getProfiles } = useProfiles();
-  const { getSubscriptions } = useSubscriptions();
+  const { getActiveSubscription } = useSubscriptions();
   const { updateOrder, getOrders } = useOrders();
 
   const [themes, setThemes] = useState([]);
@@ -54,8 +54,8 @@ export default function ThemesPage() {
 
   const fetchSubscriptionInfo = async () => {
     try {
-      const response = await getSubscriptions();
-      const activeSubscription = response.data?.find(sub => sub.status === 'active');
+      const response = await getActiveSubscription();
+      const activeSubscription = response;
       
       if (activeSubscription && activeSubscription.planId) {
         const plan = activeSubscription.planId;
@@ -104,6 +104,26 @@ export default function ThemesPage() {
       setCreating(true);
       setToast(null);
       
+      // Check if user has valid plan
+      const subscriptionResponse = await getActiveSubscription();
+      const activeSubscription = subscriptionResponse?.data;
+      
+      if (!activeSubscription) {
+        setToast({
+          type: 'error',
+          message: 'You need to purchase a plan first to create cards'
+        });
+        // Store template info to redirect back after purchase
+        if (typeof window !== 'undefined') {
+          sessionStorage.setItem('templateInfo', JSON.stringify({
+            template_id: templateId,
+            template_label: templateLabel
+          }));
+        }
+        setTimeout(() => router.push('/plans'), 1500);
+        return;
+      }
+      
       // Get the user's first profile
       const profilesResponse = await getProfiles();
       const profiles = profilesResponse.data || [];
@@ -148,7 +168,7 @@ export default function ThemesPage() {
       });
       
       // Redirect to cards list after short delay
-      setTimeout(() => router.push('/cards'), 1500);
+      setTimeout(() => router.push('/orders'), 1500);
     } catch (err) {
       console.error('Failed to create card:', err);
       

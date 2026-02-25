@@ -5,7 +5,10 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useThemes } from '@/hooks/useThemes';
 import { useCards } from '@/hooks/useCards';
 import { useProfiles } from '@/hooks/useProfiles';
+import { useSubscriptions } from '@/hooks/useSubscriptions';
+import { useOrders } from '@/hooks/useOrders';
 import { UserNavbar } from '@/components/UserNavbar';
+import DeliveryAddressModal from '@/components/DeliveryAddressModal';
 import { FormButton } from '@/components/FormButton';
 import { Card, CardContent } from '@/components/ui/card';
 import { Palette, ArrowLeft, AlertCircle, CheckCircle, X, ChevronLeft, ChevronRight } from 'lucide-react';
@@ -19,12 +22,19 @@ export default function ThemesPage() {
   const { getThemesByTemplateId } = useThemes();
   const { createCard } = useCards();
   const { getProfiles } = useProfiles();
+  const { getSubscriptions } = useSubscriptions();
+  const { updateOrder, getOrders } = useOrders();
+
   const [themes, setThemes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
   const [toast, setToast] = useState(null);
   const [previewModal, setPreviewModal] = useState(null);
   const [previewIndex, setPreviewIndex] = useState(0);
+  const [showAddressModal, setShowAddressModal] = useState(false);
+  const [addressLoading, setAddressLoading] = useState(false);
+  const [createdOrder, setCreatedOrder] = useState(null);
+  const [hasPhysicalCards, setHasPhysicalCards] = useState(false);
 
   useEffect(() => {
     const userRaw = typeof window !== 'undefined' ? localStorage.getItem('user') : null;
@@ -39,7 +49,23 @@ export default function ThemesPage() {
     }
     
     loadThemes();
+    fetchSubscriptionInfo();
   }, [router, templateId]);
+
+  const fetchSubscriptionInfo = async () => {
+    try {
+      const response = await getSubscriptions();
+      const activeSubscription = response.data?.find(sub => sub.status === 'active');
+      
+      if (activeSubscription && activeSubscription.planId) {
+        const plan = activeSubscription.planId;
+        const hasPhysical = plan.cardTypes && plan.cardTypes.includes('physical');
+        setHasPhysicalCards(hasPhysical);
+      }
+    } catch (err) {
+      console.error('Failed to fetch subscription:', err);
+    }
+  };
 
   // Handle keyboard navigation for preview modal
   useEffect(() => {
@@ -101,6 +127,21 @@ export default function ThemesPage() {
         themeId: theme.theme_id,
       });
       
+      // If user has physical cards, show address modal
+      if (hasPhysicalCards) {
+        // Get the created physical order
+        const response = await getOrders();
+        const physicalOrder = response.data?.find(
+          order => order.cardType === 'physical' && order.status === 'Order Pending'
+        );
+        
+        if (physicalOrder) {
+          setCreatedOrder(physicalOrder);
+          setShowAddressModal(true);
+          return; // Don't redirect yet
+        }
+      }
+      
       setToast({
         type: 'success',
         message: 'Card created successfully!'
@@ -130,6 +171,36 @@ export default function ThemesPage() {
       });
     } finally {
       setCreating(false);
+    }
+  };
+
+  const handleSaveDeliveryAddress = async (addressData) => {
+    try {
+      setAddressLoading(true);
+      
+      await updateOrder(createdOrder._id, {
+        shippingAddress: addressData,
+        status: 'Printing Pending'
+      });
+      
+      setToast({
+        type: 'success',
+        message: 'Delivery address saved! Your order is now in printing queue.'
+      });
+      
+      setShowAddressModal(false);
+      setCreatedOrder(null);
+      
+      // Redirect to cards list after short delay
+      setTimeout(() => router.push('/cards'), 1500);
+    } catch (error) {
+      console.error('Failed to save delivery address:', error);
+      setToast({
+        type: 'error',
+        message: `Error saving address: ${error.message}`
+      });
+    } finally {
+      setAddressLoading(false);
     }
   };
 
@@ -367,6 +438,20 @@ export default function ThemesPage() {
             </p>
           </div>
         </div>
+      )}
+
+      {/* Delivery Address Modal - shown after card creation for physical cards */}
+      {showAddressModal && createdOrder && (
+        <DeliveryAddressModal
+          order={createdOrder}
+          onSave={handleSaveDeliveryAddress}
+          onCancel={() => {
+            setShowAddressModal(false);
+            setCreatedOrder(null);
+            setTimeout(() => router.push('/cards'), 1500);
+          }}
+          loading={addressLoading}
+        />
       )}
     </div>
   );

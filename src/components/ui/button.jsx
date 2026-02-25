@@ -21,6 +21,8 @@ const Button = React.forwardRef(
       variant = "default",
       size = "default",
       asChild = false,
+      loading = false,
+      disabled,
       ...props
     },
     ref
@@ -35,6 +37,7 @@ const Button = React.forwardRef(
           className
         )}
         ref={ref}
+        disabled={disabled || loading}
         {...props}
       />
     );

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { 
   LayoutDashboard, 
@@ -49,6 +49,15 @@ export function AdminSidebar() {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(true);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const [userName, setUserName] = useState('Admin');
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    // Get user name from localStorage after mounting
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    setUserName(user?.name || 'Admin');
+    setMounted(true);
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem('authToken');
@@ -127,9 +136,7 @@ export function AdminSidebar() {
             <div className="px-4 py-3 rounded-lg bg-slate-800">
               <p className="text-xs text-slate-400">Logged in as</p>
               <p className="text-sm font-medium text-white truncate">
-                {typeof window !== 'undefined'
-                  ? JSON.parse(localStorage.getItem('user') || '{}')?.name || 'Admin'
-                  : 'Admin'}
+                {mounted ? userName : 'Admin'}
               </p>
               <Badge variant="secondary" className="mt-2 text-xs">
                 Administrator

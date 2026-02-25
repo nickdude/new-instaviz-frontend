@@ -2,11 +2,12 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { CreditCard, Edit3, LogOut, LayoutTemplate } from 'lucide-react';
+import { CreditCard, Edit3, LogOut, LayoutTemplate, ShoppingBag } from 'lucide-react';
 
 const navItems = [
   { label: 'Templates', href: '/templates', icon: LayoutTemplate },
   { label: 'Update Card', href: '/cards', icon: CreditCard },
+  { label: 'My Orders', href: '/orders', icon: ShoppingBag },
   { label: 'Edit Profile', href: '/profiles', icon: Edit3 },
 ];
 

@@ -50,7 +50,7 @@ export function UserNavbar() {
     };
 
     fetchData();
-  }, [getProfiles, getCards]);
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem('authToken');

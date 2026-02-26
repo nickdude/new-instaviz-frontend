@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import logo from "../assets/logo.jpeg";
@@ -11,13 +11,31 @@ export default function HomeNavbar() {
   const router = useRouter();
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const handleLogout = () => {
     localStorage.removeItem('authToken');
     localStorage.removeItem('user');
+    setIsAuthenticated(false);
     setIsMobileMenuOpen(false);
     router.push("/");
   };
+
+  useEffect(() => {
+    // Check authentication status on mount and when user returns to page
+    const checkAuth = () => {
+      if (typeof window !== 'undefined') {
+        const token = localStorage.getItem('authToken');
+        setIsAuthenticated(!!token);
+      }
+    };
+
+    checkAuth();
+
+    // Listen for storage changes (logout from another tab)
+    window.addEventListener('storage', checkAuth);
+    return () => window.removeEventListener('storage', checkAuth);
+  }, []);
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -51,7 +69,6 @@ export default function HomeNavbar() {
     }
   };
 
-  const isAuthenticated = typeof window !== 'undefined' ? !!localStorage.getItem('authToken') : false;
 
   return (
     <nav className="w-full bg-white shadow-sm relative">

@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { CreditCard, Edit3, LogOut, LayoutTemplate, ShoppingBag } from 'lucide-react';
@@ -9,6 +10,7 @@ import { useCards } from '@/hooks/useCards';
 
 const staticNavItems = [
   { label: 'Templates', href: '/templates', icon: LayoutTemplate },
+  { label: 'My Cards', href: '/cards', icon: CreditCard },
   { label: 'My Orders', href: '/orders', icon: ShoppingBag },
 ];
 
@@ -73,8 +75,14 @@ export function UserNavbar() {
   return (
     <header className="sticky top-0 z-20 w-full border-b border-gray-200 bg-white/80 backdrop-blur">
       <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-4">
-        <Link href="/dashboard" className="text-lg font-semibold text-gray-900">
-          Instaviz
+        <Link href="/cards">
+          <Image
+            src="/logo.jpeg"
+            alt="Instaviz"
+            width={120}
+            height={40}
+            className="h-10 w-auto"
+          />
         </Link>
         <nav className="flex items-center gap-2">
           {staticNavItems.map((item) => {

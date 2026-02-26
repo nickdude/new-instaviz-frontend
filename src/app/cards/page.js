@@ -108,15 +108,11 @@ export default function CardsPage() {
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
       <UserNavbar />
       <div className="mx-auto w-full max-w-5xl px-6 py-10">
-        <div className="flex items-center justify-between mb-8">
+        <div className="mb-8">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">My Cards</h1>
             <p className="mt-2 text-sm text-gray-500">Manage and share your digital cards.</p>
           </div>
-          <FormButton onClick={() => router.push('/templates')} className="w-auto px-5">
-            <Plus size={16} className="mr-2" />
-            Create New Card
-          </FormButton>
         </div>
 
         {cards.length === 0 ? (
@@ -150,11 +146,19 @@ export default function CardsPage() {
                         <p className="text-xs text-gray-500">Theme: {card.themeId}</p>
                         {cardUrl && (
                           <div 
-                            className="mt-2 p-2 bg-gray-50 rounded text-xs text-gray-600 break-all cursor-pointer hover:bg-gray-100 transition"
+                            className="mt-3 rounded-lg overflow-hidden cursor-pointer hover:shadow-md transition group bg-gray-50 h-40 relative"
                             onClick={() => setPreviewModal({ url: cardUrl, name: cardName })}
-                            title="Click to preview card"
+                            title="Click to open full preview"
                           >
-                            {cardUrl}
+                            <iframe
+                              src={cardUrl}
+                              className="w-full h-full border-none group-hover:scale-105 transition transform"
+                              style={{ pointerEvents: 'none' }}
+                              title="Card Preview"
+                            />
+                            <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-0 group-hover:bg-opacity-10 transition rounded-lg">
+                              <span className="text-white font-semibold opacity-0 group-hover:opacity-100 transition">Click to expand</span>
+                            </div>
                           </div>
                         )}
                       </div>
@@ -205,7 +209,11 @@ export default function CardsPage() {
                     
                     <div className="flex gap-2">
                       <button
-                        onClick={() => router.push(`/cards/${card._id}`)}
+                        onClick={() => {
+                          if (cardUrl) {
+                            window.open(cardUrl, '_blank');
+                          }
+                        }}
                         className="flex-1 flex items-center justify-center gap-1 px-3 py-2 text-xs font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition"
                       >
                         <Eye size={14} />
@@ -244,6 +252,11 @@ export default function CardsPage() {
               {previewModal.name}
             </h3>
             <div className="w-full bg-white rounded-lg p-4 shadow-2xl">
+              <iframe
+                src={previewModal.url}
+                className="w-full h-96 border-none rounded-lg mb-4"
+                title="Card Preview"
+              />
               <p className="text-gray-700 text-sm font-medium mb-2">Card URL:</p>
               <div className="flex items-center gap-2">
                 <input

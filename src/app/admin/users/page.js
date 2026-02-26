@@ -56,7 +56,6 @@ export default function UsersPage() {
         setUsers(usersList);
       } catch (error) {
         console.error('Failed to fetch users:', error);
-        alert(`Error fetching users: ${error.message}. Make sure you're logged in as admin.`);
         // Fallback to empty users list if API fails
         setUsers([]);
       } finally {
@@ -110,7 +109,7 @@ export default function UsersPage() {
             <CardContent className="pt-6">
               <div className="flex flex-col gap-2">
                 <p className="text-sm text-gray-600">Total Revenue</p>
-                <p className="text-3xl font-bold text-gray-900">${stats.totalRevenue}</p>
+                <p className="text-3xl font-bold text-gray-900">₹{stats.totalRevenue}</p>
               </div>
             </CardContent>
           </Card>

@@ -15,6 +15,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useAdminPlans } from '@/hooks/useAdminPlans';
+import { useOrders } from '@/hooks/useOrders';
+import { useAdminUsers } from '@/hooks/useAdminUsers';
+import { useSubscriptions } from '@/hooks/useSubscriptions';
 
 // Dummy Data
 const DUMMY_STATS = {
@@ -82,7 +85,16 @@ const StatCard = ({ title, value, icon: Icon, trend, trendLabel, bgColor }) => (
 
 export default function AdminDashboardPage() {
   const [plans, setPlans] = useState([]);
+  const [recentOrders, setRecentOrders] = useState([]);
+  const [ordersLoading, setOrdersLoading] = useState(true);
+  const [totalUsers, setTotalUsers] = useState(DUMMY_STATS.totalUsers);
+  const [usersLoading, setUsersLoading] = useState(true);
+  const [activeSubscriptions, setActiveSubscriptions] = useState(DUMMY_STATS.activeSubscriptions);
+  const [totalRevenue, setTotalRevenue] = useState(DUMMY_STATS.totalRevenue);
+  const [pendingOrders, setPendingOrders] = useState(DUMMY_STATS.pendingOrders);
   const { getPlans } = useAdminPlans();
+  const { getOrders, getOrderStats } = useOrders();
+  const { getUsers } = useAdminUsers();
 
   useEffect(() => {
     const fetchPlans = async () => {
@@ -98,6 +110,80 @@ export default function AdminDashboardPage() {
     fetchPlans();
   }, [getPlans]);
 
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        setOrdersLoading(true);
+        const [ordersRes, statsRes] = await Promise.all([
+          getOrders(),
+          getOrderStats()
+        ]);
+        
+        const orders = ordersRes.data || ordersRes.orders || DUMMY_RECENT_ORDERS;
+        const ordersArray = Array.isArray(orders) ? orders : [];
+        
+        // Take only the first 5 orders (most recent)
+        setRecentOrders(ordersArray.slice(0, 5));
+        
+        // Get revenue and pending orders from stats API (matches admin/orders page)
+        const stats = statsRes.data || {};
+        setTotalRevenue(stats.totalRevenue || DUMMY_STATS.totalRevenue);
+        
+        // Extract pending orders count from byStatus array
+        const pendingCount = stats.byStatus?.find(status => status._id === 'Order Pending')?.count || 0;
+        setPendingOrders(pendingCount);
+      } catch (error) {
+        console.error('Failed to fetch orders:', error);
+        setRecentOrders(DUMMY_RECENT_ORDERS);
+        setTotalRevenue(DUMMY_STATS.totalRevenue);
+        setPendingOrders(DUMMY_STATS.pendingOrders);
+      } finally {
+        setOrdersLoading(false);
+      }
+    };
+    fetchOrders();
+  }, [getOrders, getOrderStats]);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        setUsersLoading(true);
+        const response = await getUsers();
+        const usersArray = response.data || response.users || [];
+        
+        setTotalUsers(Array.isArray(usersArray) ? usersArray.length : DUMMY_STATS.totalUsers);
+        
+        // Count active users (users with active status)
+        const activeCount = usersArray.filter(u => u.status === 'active').length;
+        setActiveSubscriptions(activeCount || DUMMY_STATS.activeSubscriptions);
+        
+        // Calculate total revenue from all users
+        const revenue = usersArray.reduce((sum, u) => sum + (u.revenue || 0), 0);
+        setTotalRevenue(revenue || DUMMY_STATS.totalRevenue);
+      } catch (error) {
+        console.error('Failed to fetch users:', error);
+        setTotalUsers(DUMMY_STATS.totalUsers);
+        setActiveSubscriptions(DUMMY_STATS.activeSubscriptions);
+        setTotalRevenue(DUMMY_STATS.totalRevenue);
+      } finally {
+        setUsersLoading(false);
+      }
+    };
+    fetchUsers();
+  }, [getUsers]);
+
+  useEffect(() => {
+    const fetchSubscriptions = async () => {
+      try {
+        // Already fetched in users effect above, no need for separate fetch
+        // Active subscriptions are counted from user.status === 'active'
+      } catch (error) {
+        console.error('Failed to fetch subscriptions:', error);
+      }
+    };
+    fetchSubscriptions();
+  }, [getUsers]);
+
   return (
     <div className="flex-1 overflow-auto">
       <div className="p-8">
@@ -111,7 +197,7 @@ export default function AdminDashboardPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           <StatCard
             title="Total Users"
-            value={DUMMY_STATS.totalUsers.toLocaleString()}
+            value={totalUsers.toLocaleString()}
             icon={Users}
             trend={DUMMY_STATS.userGrowth}
             trendLabel="vs last month"
@@ -119,7 +205,7 @@ export default function AdminDashboardPage() {
           />
           <StatCard
             title="Active Subscriptions"
-            value={DUMMY_STATS.activeSubscriptions.toLocaleString()}
+            value={activeSubscriptions.toLocaleString()}
             icon={ShoppingCart}
             trend={DUMMY_STATS.subscriptionGrowth}
             trendLabel="vs last month"
@@ -127,7 +213,7 @@ export default function AdminDashboardPage() {
           />
           <StatCard
             title="Total Revenue"
-            value={`$${DUMMY_STATS.totalRevenue.toLocaleString()}`}
+            value={`₹${totalRevenue.toLocaleString()}`}
             icon={DollarSign}
             trend={DUMMY_STATS.revenueGrowth}
             trendLabel="vs last month"
@@ -135,7 +221,7 @@ export default function AdminDashboardPage() {
           />
           <StatCard
             title="Pending Orders"
-            value={DUMMY_STATS.pendingOrders}
+            value={pendingOrders}
             icon={TrendingUp}
             trend={DUMMY_STATS.ordersGrowth}
             trendLabel="vs last month"
@@ -156,44 +242,57 @@ export default function AdminDashboardPage() {
                 <Button variant="outline" size="sm">View All</Button>
               </CardHeader>
               <CardContent>
-                <div className="space-y-0 divide-y">
-                  {DUMMY_RECENT_ORDERS.map((order) => (
-                    <div key={order.id} className="flex items-center justify-between py-4 px-2 hover:bg-gray-50 rounded-lg transition-colors">
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0">
-                            <ShoppingCart className="h-5 w-5 text-blue-600" />
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <p className="text-sm font-medium text-gray-900 truncate">{order.id}</p>
-                            <p className="text-xs text-gray-500">{order.user} • {order.plan}</p>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-4 ml-4 flex-shrink-0">
-                        <div className="text-right">
-                          <p className="text-sm font-medium text-gray-900">${order.amount}</p>
-                          <p className="text-xs text-gray-500">{order.date}</p>
-                        </div>
-                        <Badge
-                          variant={
-                            order.status === 'completed'
-                              ? 'default'
-                              : order.status === 'pending'
-                              ? 'secondary'
-                              : 'destructive'
-                          }
-                          className="flex-shrink-0"
-                        >
-                          {order.status}
-                        </Badge>
-                        <Button variant="ghost" size="icon" className="flex-shrink-0">
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                {ordersLoading ? (
+                  <div className="flex items-center justify-center py-8">
+                    <p className="text-gray-500">Loading orders...</p>
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b border-gray-200">
+                          <th className="text-left px-4 py-3 font-semibold text-gray-700">Order ID</th>
+                          <th className="text-left px-4 py-3 font-semibold text-gray-700">User</th>
+                          {/* <th className="text-left px-4 py-3 font-semibold text-gray-700">Plan</th> */}
+                          <th className="text-left px-4 py-3 font-semibold text-gray-700">Card Type</th>
+                          <th className="text-left px-4 py-3 font-semibold text-gray-700">Qty</th>
+                          <th className="text-left px-4 py-3 font-semibold text-gray-700">Amount</th>
+                          <th className="text-left px-4 py-3 font-semibold text-gray-700">Status</th>
+                          <th className="text-left px-4 py-3 font-semibold text-gray-700">Date</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {recentOrders.map((order) => (
+                          <tr key={order._id} className="border-b border-gray-100 hover:bg-gray-50">
+                            <td className="px-4 py-3 text-gray-900 font-medium">{order._id?.slice(-6).toUpperCase()}</td>
+                            <td className="px-4 py-3">
+                              <div>
+                                <p className="text-gray-900">{order.userId?.name}</p>
+                                <p className="text-xs text-gray-500">{order.userId?.email}</p>
+                              </div>
+                            </td>
+                            {/* <td className="px-4 py-3 text-gray-700">{order.planId?.title}</td> */}
+                            <td className="px-4 py-3">
+                              <Badge className="bg-blue-100 text-blue-800">
+                                {order.cardType}
+                              </Badge>
+                            </td>
+                            <td className="px-4 py-3 text-gray-700">{order.orderDetails?.quantity}</td>
+                            <td className="px-4 py-3 text-gray-900 font-semibold">₹{order.orderDetails?.totalAmount?.toFixed(2) || 0}</td>
+                            <td className="px-4 py-3">
+                              <Badge className="bg-green-100 text-center text-green-800">
+                                {order.status}
+                              </Badge>
+                            </td>
+                            <td className="px-4 py-3 text-gray-600 text-xs">
+                              {new Date(order.createdAt).toLocaleDateString()}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>

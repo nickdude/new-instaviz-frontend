@@ -21,36 +21,23 @@ import { useSubscriptions } from '@/hooks/useSubscriptions';
 
 // Dummy Data
 const DUMMY_STATS = {
-  totalUsers: 1234,
-  activeSubscriptions: 856,
-  totalRevenue: 45230,
-  pendingOrders: 23,
-  userGrowth: 12.5,
-  revenueGrowth: 8.3,
-  subscriptionGrowth: -2.1,
-  ordersGrowth: 5.2,
+  totalUsers: 0,
+  activeSubscriptions: 0,
+  totalRevenue: 0,
+  pendingOrders: 0,
+  userGrowth: 0,
+  revenueGrowth: 0,
+  subscriptionGrowth: 0,
+  ordersGrowth: 0,
 };
 
 const DUMMY_RECENT_USERS = [
-  { id: 1, name: 'John Doe', email: 'john@example.com', joinDate: '2024-02-20', status: 'active', plan: 'Premium' },
-  { id: 2, name: 'Jane Smith', email: 'jane@example.com', joinDate: '2024-02-19', status: 'active', plan: 'Pro' },
-  { id: 3, name: 'Mike Johnson', email: 'mike@example.com', joinDate: '2024-02-18', status: 'inactive', plan: 'Starter' },
-  { id: 4, name: 'Sarah Williams', email: 'sarah@example.com', joinDate: '2024-02-17', status: 'active', plan: 'Premium' },
-  { id: 5, name: 'Tom Brown', email: 'tom@example.com', joinDate: '2024-02-16', status: 'active', plan: 'Pro' },
 ];
 
 const DUMMY_RECENT_ORDERS = [
-  { id: 'ORD-001', user: 'John Doe', plan: 'Premium Annual', amount: 999, status: 'completed', date: '2024-02-20' },
-  { id: 'ORD-002', user: 'Jane Smith', plan: 'Pro Monthly', amount: 49, status: 'pending', date: '2024-02-19' },
-  { id: 'ORD-003', user: 'Mike Johnson', plan: 'Starter Monthly', amount: 29, status: 'completed', date: '2024-02-18' },
-  { id: 'ORD-004', user: 'Sarah Williams', plan: 'Premium Monthly', amount: 99, status: 'completed', date: '2024-02-17' },
-  { id: 'ORD-005', user: 'Tom Brown', plan: 'Pro Annual', amount: 499, status: 'failed', date: '2024-02-16' },
 ];
 
 const DUMMY_PLANS = [
-  { id: 1, name: 'Starter', price: 29, users: 234, revenue: 6786, status: 'active' },
-  { id: 2, name: 'Pro', price: 99, users: 456, revenue: 45144, status: 'active' },
-  { id: 3, name: 'Premium', price: 199, users: 234, revenue: 46566, status: 'active' },
 ];
 
 const StatCard = ({ title, value, icon: Icon, trend, trendLabel, bgColor }) => (

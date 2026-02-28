@@ -165,8 +165,8 @@ export default function CreateProfilePage() {
         });
 
       await createProfile(formData);
-      // Redirect to plans page to purchase a plan
-      router.push('/plans');
+      // Redirect to templates page to select a template
+      router.push('/templates');
     } catch (err) {
       console.error('Failed to create profile:', err);
       alert('Failed to create profile. Please try again.');

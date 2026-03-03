@@ -13,10 +13,8 @@ import { FormButton } from '@/components/FormButton';
 import { Card, CardContent } from '@/components/ui/card';
 import { Palette, ArrowLeft, AlertCircle, CheckCircle, X, ChevronLeft, ChevronRight } from 'lucide-react';
 
-export default function ThemesClient({ templateId: initialTemplateId, templateLabel: initialTemplateLabel }) {
+export default function ThemesClient({ templateId, templateLabel }) {
   const router = useRouter();
-  const templateId = initialTemplateId;
-  const templateLabel = initialTemplateLabel;
   
   const { getThemesByTemplateId } = useThemes();
   const { createCard } = useCards();

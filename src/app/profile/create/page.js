@@ -165,6 +165,13 @@ export default function CreateProfilePage() {
         });
 
       await createProfile(formData);
+      
+      // Sync profileType and layout to localStorage after successful profile creation
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('profileType', profileData.profileType);
+        localStorage.setItem('layout', profileData.layout);
+      }
+      
       // Redirect to templates page to select a template
       router.push('/templates');
     } catch (err) {

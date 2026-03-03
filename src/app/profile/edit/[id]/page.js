@@ -78,6 +78,12 @@ export default function EditProfilePage() {
         },
       });
       
+      // Sync profileType and layout to localStorage
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('profileType', profile.profileType || '');
+        localStorage.setItem('layout', profile.layout || '');
+      }
+      
       // Start from profile type step (similar to create flow)
       setStep(1);
     } catch (err) {
@@ -205,6 +211,13 @@ export default function EditProfilePage() {
       });
 
       await updateProfile(profileId, formData);
+      
+      // Sync profileType and layout to localStorage after successful update
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('profileType', profileData.profileType);
+        localStorage.setItem('layout', profileData.layout);
+      }
+      
       router.push('/cards'); // Redirect to cards page after update
     } catch (err) {
       console.error('Failed to update profile:', err);

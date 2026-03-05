@@ -75,7 +75,7 @@ export function UserNavbar() {
   return (
     <header className="sticky top-0 z-20 w-full border-b border-gray-200 bg-white/80 backdrop-blur">
       <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-4">
-        <Link href="/cards">
+        <Link href="/card">
           <Image
             src="/logo.jpeg"
             alt="Instaviz"

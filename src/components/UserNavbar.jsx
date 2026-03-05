@@ -10,7 +10,7 @@ import { useCards } from '@/hooks/useCards';
 
 const staticNavItems = [
   { label: 'Templates', href: '/templates', icon: LayoutTemplate },
-  { label: 'My Cards', href: '/cards', icon: CreditCard },
+  { label: 'My Cards', href: '/card', icon: CreditCard },
   { label: 'My Orders', href: '/orders', icon: ShoppingBag },
 ];
 
@@ -68,7 +68,7 @@ export function UserNavbar() {
 
   const handleUpdateCard = () => {
     if (cardId) {
-      router.push(`/cards/edit/${cardId}`);
+      router.push(`/card/edit/${cardId}`);
     }
   };
 

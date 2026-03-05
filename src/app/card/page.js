@@ -220,7 +220,7 @@ export default function CardsPage() {
                         View
                       </button>
                       <button
-                        onClick={() => router.push(`/cards/edit/${card._id}`)}
+                        onClick={() => router.push(`/card/edit/${card._id}`)}
                         className="flex-1 flex items-center justify-center gap-1 px-3 py-2 text-xs font-medium text-blue-700 bg-blue-50 rounded-lg hover:bg-blue-100 transition"
                       >
                         <Pencil size={14} />

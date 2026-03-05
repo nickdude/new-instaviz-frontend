@@ -140,7 +140,7 @@ export default function EditCardPage() {
         templateId: formData.templateId,
         themeId: formData.themeId
       });
-      router.push(`/cards/${cardId}`);
+      router.push(`/card`);
     } catch (err) {
       console.error('Failed to update card:', err);
       alert('Failed to update card. Please try again.');

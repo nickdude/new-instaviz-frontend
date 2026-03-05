@@ -62,7 +62,7 @@ export default function CardDetailPage() {
           <Card>
             <CardContent className="p-8 text-center">
               <h2 className="text-lg font-semibold text-gray-900">Card not found</h2>
-              <FormButton onClick={() => router.push('/cards')} className="mt-4">
+              <FormButton onClick={() => router.push('/card')} className="mt-4">
                 Back to Cards
               </FormButton>
             </CardContent>
@@ -147,7 +147,7 @@ export default function CardDetailPage() {
           </CardContent>
         </Card>
 
-        <FormButton onClick={() => router.push(`/cards/edit/${card._id}`)}>
+        <FormButton onClick={() => router.push(`/card/edit/${card._id}`)}>
           Edit Card
         </FormButton>
       </div>

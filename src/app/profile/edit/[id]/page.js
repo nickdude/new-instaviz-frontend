@@ -173,7 +173,9 @@ export default function EditProfilePage() {
         apiData.companyLogo = profileData.contactInfo.companyLogo;
         apiData.products = (profileData.products || []).map((product) => ({
           name: product.name,
-          description: product.description
+          description: product.description,
+          image: product.image || null,
+          pdf: product.pdf || null,
         }));
         apiData.enquiryForm = {
           enabled: profileData.enquiryForm?.enableEnquiry ?? false,
@@ -186,7 +188,7 @@ export default function EditProfilePage() {
         apiData.studentDetails = {
           aboutMe: profileData.studentDetails.aboutMe,
           skills: profileData.studentDetails.skills,
-          resumeFile: null,
+          resumeFile: profileData.studentDetails.resumeFile || null,
         };
       }
 

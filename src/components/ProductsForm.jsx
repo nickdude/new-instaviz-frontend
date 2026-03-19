@@ -59,6 +59,8 @@ export function ProductsForm({ onSubmit, onBack, initialData = {} }) {
         newErrors[`product${index}_description`] = 'Description is required';
       if (!product.image)
         newErrors[`product${index}_image`] = 'Product image is required';
+      if (!product.pdf)
+        newErrors[`product${index}_pdf`] = 'Product PDF is required';
     });
 
     setErrors(newErrors);
@@ -175,7 +177,7 @@ export function ProductsForm({ onSubmit, onBack, initialData = {} }) {
 
             <div>
               <label className="block text-sm font-medium text-gray-800 mb-2">
-                Product PDF (Optional)
+                Product PDF <span className="text-red-500">*</span>
               </label>
               {product.pdf && !(product.pdf instanceof File) && (
                 <div className="mb-3 flex items-center gap-3 p-3 bg-red-50 rounded-lg border border-red-200">
@@ -207,6 +209,11 @@ export function ProductsForm({ onSubmit, onBack, initialData = {} }) {
                   className="hidden"
                 />
               </label>
+              {errors[`product${index}_pdf`] && (
+                <p className="mt-1 text-sm text-red-500">
+                  {errors[`product${index}_pdf`]}
+                </p>
+              )}
             </div>
           </div>
         ))}

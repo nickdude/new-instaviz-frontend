@@ -134,7 +134,7 @@ export default function TemplatesClient({ profileType: initialProfileType, layou
               <p className="mt-1.5 text-sm text-gray-600">Choose a template to get started{screenCount}</p>
             </div>
             <FormButton 
-              onClick={() => router.push('/card')} 
+              onClick={() => router.push('/my-card')} 
               className="!w-auto !px-4 !py-2 text-sm whitespace-nowrap flex-shrink-0"
               fullWidth={false}
             >

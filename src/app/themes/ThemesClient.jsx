@@ -209,7 +209,7 @@ export default function ThemesClient({ templateId, templateLabel }) {
       setCreatedOrder(null);
       
       // Redirect to cards list after short delay
-      setTimeout(() => router.push('/card'), 1500);
+      setTimeout(() => router.push('/my-card'), 1500);
     } catch (error) {
       console.error('Failed to save delivery address:', error);
       setToast({
@@ -465,7 +465,7 @@ export default function ThemesClient({ templateId, templateLabel }) {
           onCancel={() => {
             setShowAddressModal(false);
             setCreatedOrder(null);
-            setTimeout(() => router.push('/card'), 1500);
+            setTimeout(() => router.push('/my-card'), 1500);
           }}
           loading={addressLoading}
         />

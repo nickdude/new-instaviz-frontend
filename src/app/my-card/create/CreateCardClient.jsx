@@ -89,7 +89,7 @@ export default function CreateCardClient({ presetTemplateId = null, presetThemeI
         templateId: formData.templateId,
         themeId: formData.themeId
       });
-      router.push('/card');
+      router.push('/my-card');
     } catch (err) {
       console.error('Failed to create card:', err);
       alert('Failed to create card. Please try again.');

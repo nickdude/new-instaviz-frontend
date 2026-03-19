@@ -218,7 +218,7 @@ export default function EditProfilePage() {
         localStorage.setItem('layout', profileData.layout);
       }
       
-      router.push('/card'); // Redirect to cards page after update
+      router.push('/my-card'); // Redirect to cards page after update
     } catch (err) {
       console.error('Failed to update profile:', err);
       alert('Failed to update profile. Please try again.');

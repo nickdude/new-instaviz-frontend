@@ -10,7 +10,7 @@ import { useCards } from '@/hooks/useCards';
 
 const staticNavItems = [
   { label: 'Templates', href: '/templates', icon: LayoutTemplate },
-  { label: 'My Cards', href: '/card', icon: CreditCard },
+  { label: 'My Cards', href: '/my-card', icon: CreditCard },
   { label: 'My Orders', href: '/orders', icon: ShoppingBag },
 ];
 
@@ -68,14 +68,14 @@ export function UserNavbar() {
 
   const handleUpdateCard = () => {
     if (cardId) {
-      router.push(`/card/edit/${cardId}`);
+      router.push(`/my-card/edit/${cardId}`);
     }
   };
 
   return (
     <header className="sticky top-0 z-20 w-full border-b border-gray-200 bg-white/80 backdrop-blur">
       <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-4">
-        <Link href="/card">
+        <Link href="/my-card">
           <Image
             src="/logo.jpeg"
             alt="Instaviz"

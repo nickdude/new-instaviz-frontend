@@ -84,6 +84,19 @@ export function useAuth() {
     return await apiCall(`/api/auth/verify/${token}`, 'GET');
   };
 
+  const googleAuth = async (googleToken) => {
+    const response = await apiCall('/api/auth/google', 'POST', {
+      token: googleToken,
+    });
+
+    if (response.data?.token) {
+      localStorage.setItem('authToken', response.data.token);
+      localStorage.setItem('user', JSON.stringify(response.data.user));
+    }
+
+    return response;
+  };
+
   const logout = () => {
     localStorage.removeItem('authToken');
     localStorage.removeItem('user');
@@ -94,6 +107,7 @@ export function useAuth() {
     error,
     register,
     login,
+    googleAuth,
     forgotPassword,
     resetPassword,
     verifyEmail,

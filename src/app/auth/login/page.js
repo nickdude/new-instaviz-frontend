@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Mail, Lock } from 'lucide-react';
 import { FormContainer } from '@/components/FormContainer';
@@ -14,13 +14,83 @@ import { useAuth } from '@/hooks/useAuth';
 
 export default function LoginPage() {
   const router = useRouter();
-  const { login, loading, error } = useAuth();
+  const { login, googleAuth, loading, error } = useAuth();
   const [formError, setFormError] = useState('');
+  const [googleLoading, setGoogleLoading] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
     password: '',
   });
   const [fieldErrors, setFieldErrors] = useState({});
+
+  // Initialize Google OAuth
+  useEffect(() => {
+    const initializeGoogle = async () => {
+      if (window.google) {
+        try {
+          window.google.accounts.id.initialize({
+            client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
+            callback: handleGoogleSuccess,
+          });
+
+          const googleButton = document.getElementById('googleSignInButton');
+          if (googleButton) {
+            window.google.accounts.id.renderButton(googleButton, {
+              theme: 'outline',
+              size: 'large',
+              width: '100%',
+            });
+          }
+        } catch (err) {
+          console.error('Failed to initialize Google:', err);
+        }
+      }
+    };
+
+    // Check if script is loaded
+    if (!window.google) {
+      const script = document.createElement('script');
+      script.src = 'https://accounts.google.com/gsi/client';
+      script.async = true;
+      script.defer = true;
+      script.onload = initializeGoogle;
+      document.head.appendChild(script);
+    } else {
+      initializeGoogle();
+    }
+
+    return () => {
+      // Cleanup
+      if (window.google) {
+        window.google.accounts.id.cancel();
+      }
+    };
+  }, []);
+
+  const handleGoogleSuccess = async (credentialResponse) => {
+    try {
+      setGoogleLoading(true);
+      setFormError('');
+
+      const token = credentialResponse.credential;
+      if (!token) {
+        throw new Error('No credential received from Google');
+      }
+
+      // Call backend to authenticate with Google token
+      const response = await googleAuth(token);
+
+      if (response?.data?.token) {
+        // Redirect to dashboard after successful login
+        router.push('/dashboard');
+      }
+    } catch (err) {
+      setFormError(err.message || 'Google sign-in failed');
+      console.error('Google sign-in error:', err);
+    } finally {
+      setGoogleLoading(false);
+    }
+  };
 
   const validateForm = () => {
     const errors = {};
@@ -81,7 +151,7 @@ export default function LoginPage() {
 
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Google Auth */}
-        <GoogleAuthButton onClick={() => {}} loading={loading} />
+        <div id="googleSignInButton" className="w-full" />
 
         <Divider />
 
@@ -121,7 +191,7 @@ export default function LoginPage() {
         </div>
 
         {/* Submit Button */}
-        <FormButton type="submit" loading={loading} className="mt-6">
+        <FormButton type="submit" loading={loading || googleLoading} className="mt-6">
           Sign in
         </FormButton>
       </form>

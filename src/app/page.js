@@ -74,10 +74,8 @@ export default function Home() {
                 key={plan._id}
                 title={plan.title}
                 price={plan.price}
-                subtitle={plan.subtitle}
-                onContinue={() => router.push('/plans')}
-                disabled={false}
-                showButton={true}
+                subNote={plan.subtitle}
+                onSelect={() => router.push('/auth/register')}
               />
             ))}
           </div>

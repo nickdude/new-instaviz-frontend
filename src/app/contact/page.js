@@ -11,7 +11,17 @@ export default function ContactUs() {
     const [loading, setLoading] = useState(false)
     const [errors, setErrors] = useState({})
 
-    const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value })
+    const handleChange = (e) => {
+        const { name, value } = e.target
+
+        if (name === 'name') {
+            const sanitizedName = value.replace(/[0-9]/g, '')
+            setForm({ ...form, [name]: sanitizedName })
+            return
+        }
+
+        setForm({ ...form, [name]: value })
+    }
 
     const validate = () => {
         const err = {}
@@ -86,7 +96,14 @@ export default function ContactUs() {
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <div>
                                 <label className="block text-sm font-medium text-gray-700">Name</label>
-                                <input name="name" value={form.name} onChange={handleChange} className="mt-1 block w-full border rounded-lg p-3 outline-none" />
+                                <input
+                                    name="name"
+                                    value={form.name}
+                                    onChange={handleChange}
+                                    inputMode="text"
+                                    pattern="[A-Za-z ]*"
+                                    className="mt-1 block w-full border rounded-lg p-3 outline-none"
+                                />
                                 {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
                             </div>
 

@@ -116,7 +116,7 @@ export default function Benefit() {
       </div>
 
       <div className="mt-8">
-        <Link href="/register"><BlueButton label='Get Yours Now' /></Link>
+        <Link href="/auth/register"><BlueButton label='Get Yours Now' /></Link>
       </div>
     </div>
   );

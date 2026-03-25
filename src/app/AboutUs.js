@@ -114,7 +114,7 @@ const AboutUs = () => {
                     <footer className="text-center py-6">
                         <p className="text-sm text-gray-600 mb-4">Ready to modernize how you share your professional identity?</p>
                         <div className="flex items-center justify-center gap-4">
-                            <Link to="/register"><BlueButton label="Get Started" width="" /></Link>
+                            <Link to="/auth/register"><BlueButton label="Get Started" width="" /></Link>
                             <Link to="/contact" className="text-sm text-lightBlue underline">Contact Sales</Link>
                         </div>
                     </footer>

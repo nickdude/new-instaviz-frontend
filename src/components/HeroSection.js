@@ -26,7 +26,7 @@ export default function HeroSection() {
           AI-powered digital cards that capture leads, integrate with CRMs, and amplify your brand
         </p>
         <div className='flex flex-col sm:flex-row gap-4 mt-8 lg:mt-12 justify-center lg:justify-start'>
-          <Link href="/register"><BlueButton label='Get Yours Now' /></Link>
+          <Link href="/auth/register"><BlueButton label='Get Yours Now' /></Link>
           <Link href="/contact"><BlackButton label='Book a Demo' /></Link>
         </div>
         <div className='flex flex-col sm:flex-row items-center justify-center lg:justify-start mt-8 lg:mt-14 gap-4'>

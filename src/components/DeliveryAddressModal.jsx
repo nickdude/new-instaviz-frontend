@@ -73,15 +73,15 @@ export default function DeliveryAddressModal({ order, onSave, onCancel, loading 
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <Card className="w-full max-w-2xl border border-gray-200">
+    <div className="fixed inset-0 bg-black/50 flex items-start md:items-center justify-center z-50 p-3 md:p-4 overflow-y-auto">
+      <Card className="w-full max-w-2xl border border-gray-200 max-h-[92vh] flex flex-col my-3 md:my-0">
         <CardHeader className="border-b border-gray-200">
           <CardTitle>Delivery Address</CardTitle>
           <p className="text-sm text-gray-600 mt-2">Please provide your delivery address for the physical cards</p>
         </CardHeader>
 
-        <form onSubmit={handleSubmit}>
-          <CardContent className="pt-6 space-y-6">
+        <form onSubmit={handleSubmit} className="flex flex-col min-h-0 flex-1">
+          <CardContent className="pt-6 space-y-6 overflow-y-auto flex-1 min-h-0">
             {/* Info Alert */}
             <div className="bg-blue-50 border border-blue-200 rounded-md p-4 flex gap-3">
               <AlertCircle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
@@ -92,9 +92,9 @@ export default function DeliveryAddressModal({ order, onSave, onCancel, loading 
             </div>
 
             {/* Two Column Layout */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Full Name */}
-              <div className="col-span-2">
+              <div className="md:col-span-2">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Full Name *
                 </label>
@@ -148,7 +148,7 @@ export default function DeliveryAddressModal({ order, onSave, onCancel, loading 
               </div>
 
               {/* Address Line 1 */}
-              <div className="col-span-2">
+              <div className="md:col-span-2">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Address Line 1 *
                 </label>
@@ -166,7 +166,7 @@ export default function DeliveryAddressModal({ order, onSave, onCancel, loading 
               </div>
 
               {/* Address Line 2 */}
-              <div className="col-span-2">
+              <div className="md:col-span-2">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Address Line 2 (Optional)
                 </label>
@@ -252,20 +252,20 @@ export default function DeliveryAddressModal({ order, onSave, onCancel, loading 
           </CardContent>
 
           {/* Footer with Actions */}
-          <div className="border-t border-gray-200 px-6 py-4 flex gap-3 justify-end">
+          <div className="border-t border-gray-200 px-4 md:px-6 py-4 flex flex-col-reverse sm:flex-row gap-3 justify-end sticky bottom-0 bg-white">
             <Button
               type="button"
               variant="outline"
               onClick={onCancel}
               disabled={loading}
-              className="border border-gray-300"
+              className="border border-gray-300 w-full sm:w-auto"
             >
               Cancel
             </Button>
             <Button
               type="submit"
               disabled={loading}
-              className="bg-blue-600 hover:bg-blue-700 text-white"
+              className="bg-blue-600 hover:bg-blue-700 text-white w-full sm:w-auto"
             >
               {loading ? 'Saving...' : 'Save Address'}
             </Button>

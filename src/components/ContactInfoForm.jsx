@@ -6,6 +6,7 @@ import { FormButton } from '@/components/FormButton';
 import { Mail, Phone, User, MapPin, Linkedin, Globe, Github, Camera, Facebook, Instagram, Twitter } from 'lucide-react';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5002';
+const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png'];
 
 const getFullImageUrl = (imagePath) => {
   if (!imagePath) return null;
@@ -38,15 +39,18 @@ export function ContactInfoForm({ onSubmit, onBack, initialData = {}, profileTyp
     setErrors((prev) => ({ ...prev, [name]: '' }));
   };
 
-    const handleFileChange = (e, fieldName) => {
-      const file = e.target.files[0];
-      if (file && file.type.startsWith('image/')) {
-        setFormData((prev) => ({ ...prev, [fieldName]: file }));
-        setErrors((prev) => ({ ...prev, [fieldName]: '' }));
-      } else {
-        setErrors((prev) => ({ ...prev, [fieldName]: 'Only image files are allowed' }));
-      }
-    };
+  const handleFileChange = (e, fieldName) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (ALLOWED_IMAGE_TYPES.includes(file.type)) {
+      setFormData((prev) => ({ ...prev, [fieldName]: file }));
+      setErrors((prev) => ({ ...prev, [fieldName]: '' }));
+    } else {
+      setErrors((prev) => ({ ...prev, [fieldName]: 'Only JPG, JPEG, or PNG files are allowed' }));
+      e.target.value = '';
+    }
+  };
 
   const validate = () => {
     const newErrors = {};
@@ -234,7 +238,7 @@ export function ContactInfoForm({ onSubmit, onBack, initialData = {}, profileTyp
               </div>
               <input
                 type="file"
-                accept="image/*"
+                accept=".jpg,.jpeg,.png,image/jpeg,image/png"
                 onChange={(e) => handleFileChange(e, 'photo')}
                 className="hidden"
               />
@@ -264,7 +268,7 @@ export function ContactInfoForm({ onSubmit, onBack, initialData = {}, profileTyp
               </div>
               <input
                 type="file"
-                accept="image/*"
+                accept=".jpg,.jpeg,.png,image/jpeg,image/png"
                 onChange={(e) => handleFileChange(e, 'companyLogo')}
                 className="hidden"
               />

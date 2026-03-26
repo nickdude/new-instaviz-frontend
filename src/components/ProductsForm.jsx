@@ -6,6 +6,7 @@ import { FormButton } from '@/components/FormButton';
 import { Plus, X, Image, FileText } from 'lucide-react';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5002';
+const ALLOWED_PRODUCT_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png'];
 
 const getFullFileUrl = (filePath) => {
   if (!filePath) return null;
@@ -38,14 +39,16 @@ export function ProductsForm({ onSubmit, onBack, initialData = {} }) {
   };
 
   const handleFileChange = (index, field, file) => {
-    if (field === 'image' && file && file.type.startsWith('image/')) {
+    if (field === 'image' && file && ALLOWED_PRODUCT_IMAGE_TYPES.includes(file.type)) {
       updateProduct(index, field, file);
     } else if (field === 'pdf' && file && file.type === 'application/pdf') {
       updateProduct(index, field, file);
     } else {
       setErrors((prev) => ({
         ...prev,
-        [`product${index}_${field}`]: `Invalid file type`,
+        [`product${index}_${field}`]: field === 'image'
+          ? 'Only JPG, JPEG, or PNG files are allowed'
+          : 'Invalid file type',
       }));
     }
   };
@@ -145,7 +148,7 @@ export function ProductsForm({ onSubmit, onBack, initialData = {} }) {
                 </div>
                 <input
                   type="file"
-                  accept="image/*"
+                  accept=".jpg,.jpeg,.png,image/jpeg,image/png"
                   onChange={(e) => handleFileChange(index, 'image', e.target.files[0])}
                   className="hidden"
                 />

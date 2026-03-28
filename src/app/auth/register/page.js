@@ -40,10 +40,12 @@ export default function RegisterPage() {
 
           const googleButton = document.getElementById('googleSignInButton');
           if (googleButton) {
+            googleButton.innerHTML = '';
+            const buttonWidth = Math.max(280, Math.floor(googleButton.offsetWidth || 320));
             window.google.accounts.id.renderButton(googleButton, {
               theme: 'outline',
               size: 'large',
-              width: '100%',
+              width: buttonWidth,
             });
           }
         } catch (err) {
@@ -176,10 +178,7 @@ export default function RegisterPage() {
       {!formError && error && <Alert type="error" message={error} />}
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Google Auth */}
-        <div id="googleSignInButton" className="w-full" />
-
-        <Divider />
+        
 
         {/* Name Field */}
         <FormInput
@@ -264,6 +263,10 @@ export default function RegisterPage() {
         <FormButton type="submit" loading={loading || googleLoading} className="mt-6">
           Sign up
         </FormButton>
+        {/* Google Auth */}
+        <Divider />
+        <div id="googleSignInButton" className="w-full" />
+
       </form>
 
       {/* Sign In Link */}

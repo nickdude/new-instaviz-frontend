@@ -37,11 +37,11 @@ const ADMIN_NAVIGATION = [
     href: '/admin/orders',
     icon: ShoppingCart,
   },
-  {
-    name: 'Settings',
-    href: '/admin/settings',
-    icon: Settings,
-  },
+  // {
+  //   name: 'Settings',
+  //   href: '/admin/settings',
+  //   icon: Settings,
+  // },
 ];
 
 export function AdminSidebar() {

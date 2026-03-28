@@ -35,10 +35,12 @@ export default function LoginPage() {
 
           const googleButton = document.getElementById('googleSignInButton');
           if (googleButton) {
+            googleButton.innerHTML = '';
+            const buttonWidth = Math.max(280, Math.floor(googleButton.offsetWidth || 320));
             window.google.accounts.id.renderButton(googleButton, {
               theme: 'outline',
               size: 'large',
-              width: '100%',
+              width: buttonWidth,
             });
           }
         } catch (err) {
@@ -150,10 +152,6 @@ export default function LoginPage() {
       )}
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Google Auth */}
-        <div id="googleSignInButton" className="w-full" />
-
-        <Divider />
 
         {/* Email Field */}
         <FormInput
@@ -194,6 +192,12 @@ export default function LoginPage() {
         <FormButton type="submit" loading={loading || googleLoading} className="mt-6">
           Sign in
         </FormButton>
+
+         {/* Google Auth */}
+          <Divider />
+        <div id="googleSignInButton" className="w-full" />
+
+       
       </form>
 
       {/* Sign Up Link */}

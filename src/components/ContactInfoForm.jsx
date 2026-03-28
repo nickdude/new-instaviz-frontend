@@ -7,6 +7,7 @@ import { Mail, Phone, User, MapPin, Linkedin, Globe, Github, Camera, Facebook, I
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5002';
 const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png'];
+const MAX_IMAGE_SIZE_BYTES = 3 * 1024 * 1024;
 
 const getFullImageUrl = (imagePath) => {
   if (!imagePath) return null;
@@ -43,12 +44,21 @@ export function ContactInfoForm({ onSubmit, onBack, initialData = {}, profileTyp
     const file = e.target.files[0];
     if (!file) return;
 
+    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+      setErrors((prev) => ({ ...prev, [fieldName]: 'Only JPG, JPEG, or PNG files are allowed' }));
+      e.target.value = '';
+      return;
+    }
+
+    if (file.size > MAX_IMAGE_SIZE_BYTES) {
+      setErrors((prev) => ({ ...prev, [fieldName]: 'Image size must be 3MB or less' }));
+      e.target.value = '';
+      return;
+    }
+
     if (ALLOWED_IMAGE_TYPES.includes(file.type)) {
       setFormData((prev) => ({ ...prev, [fieldName]: file }));
       setErrors((prev) => ({ ...prev, [fieldName]: '' }));
-    } else {
-      setErrors((prev) => ({ ...prev, [fieldName]: 'Only JPG, JPEG, or PNG files are allowed' }));
-      e.target.value = '';
     }
   };
 

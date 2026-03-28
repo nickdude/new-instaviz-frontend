@@ -7,6 +7,7 @@ import { Plus, X, Image, FileText } from 'lucide-react';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5002';
 const ALLOWED_PRODUCT_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png'];
+const MAX_IMAGE_SIZE_BYTES = 3 * 1024 * 1024;
 
 const getFullFileUrl = (filePath) => {
   if (!filePath) return null;
@@ -39,6 +40,22 @@ export function ProductsForm({ onSubmit, onBack, initialData = {} }) {
   };
 
   const handleFileChange = (index, field, file) => {
+    if (field === 'image' && file && !ALLOWED_PRODUCT_IMAGE_TYPES.includes(file.type)) {
+      setErrors((prev) => ({
+        ...prev,
+        [`product${index}_${field}`]: 'Only JPG, JPEG, or PNG files are allowed',
+      }));
+      return;
+    }
+
+    if (field === 'image' && file && file.size > MAX_IMAGE_SIZE_BYTES) {
+      setErrors((prev) => ({
+        ...prev,
+        [`product${index}_${field}`]: 'Image size must be 3MB or less',
+      }));
+      return;
+    }
+
     if (field === 'image' && file && ALLOWED_PRODUCT_IMAGE_TYPES.includes(file.type)) {
       updateProduct(index, field, file);
     } else if (field === 'pdf' && file && file.type === 'application/pdf') {

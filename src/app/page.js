@@ -68,16 +68,19 @@ export default function Home() {
             <p className="text-sm text-lightGrey">Choose a plan that fits you. Visit Plans page to purchase.</p>
           </div>
 
-          <div className="flex items-start justify-center md:justify-between gap-6 mt-4 w-full py-10">
-            {SAMPLE_PLANS.map((plan) => (
-              <PlanCard
-                key={plan._id}
-                title={plan.title}
-                price={plan.price}
-                subNote={plan.subtitle}
-                onSelect={() => router.push('/my-card')}
-              />
-            ))}
+          <div className="mt-4 w-full">
+            <div className="flex items-start justify-start gap-6 py-4 md:py-10 overflow-x-auto md:overflow-visible md:grid md:grid-cols-4 md:justify-between">
+              {SAMPLE_PLANS.map((plan) => (
+                <div key={plan._id} className="shrink-0 min-w-[260px] md:min-w-0">
+                  <PlanCard
+                    title={plan.title}
+                    price={plan.price}
+                    subNote={plan.subtitle}
+                    onSelect={() => router.push('/my-card')}
+                  />
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>

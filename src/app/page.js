@@ -75,7 +75,7 @@ export default function Home() {
                 title={plan.title}
                 price={plan.price}
                 subNote={plan.subtitle}
-                onSelect={() => router.push('/auth/register')}
+                onSelect={() => router.push('/my-card')}
               />
             ))}
           </div>

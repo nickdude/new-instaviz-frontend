@@ -7,6 +7,7 @@ import { Mail, Phone, User, MapPin, Linkedin, Globe, Github, Camera, Facebook, I
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5002';
 const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png'];
+const BLOCKED_IMAGE_TYPES = ['image/jfif', 'image/webp', 'image/gif', 'image/bmp'];
 const MAX_IMAGE_SIZE_BYTES = 3 * 1024 * 1024;
 
 const getFullImageUrl = (imagePath) => {
@@ -44,22 +45,42 @@ export function ContactInfoForm({ onSubmit, onBack, initialData = {}, profileTyp
     const file = e.target.files[0];
     if (!file) return;
 
-    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
-      setErrors((prev) => ({ ...prev, [fieldName]: 'Only JPG, JPEG, or PNG files are allowed' }));
+    // Check file extension to block .jfif, .webp, .gif, .bmp
+    const fileName = file.name.toLowerCase();
+    const blockedExtensions = ['.jfif', '.webp', '.gif', '.bmp'];
+    const hasBlockedExtension = blockedExtensions.some(ext => fileName.endsWith(ext));
+    
+    if (hasBlockedExtension) {
+      const ext = fileName.substring(fileName.lastIndexOf('.'));
+      setErrors((prev) => ({ ...prev, [fieldName]: `${ext.toUpperCase()} format is not allowed. Only JPG, JPEG, or PNG files are accepted.` }));
       e.target.value = '';
       return;
     }
 
+    // Check if file is blocked format (JFIF, WebP, GIF, BMP, etc.)
+    if (BLOCKED_IMAGE_TYPES.includes(file.type)) {
+      setErrors((prev) => ({ ...prev, [fieldName]: `${file.type === 'image/jfif' ? 'JFIF' : 'This'} format is not allowed. Only JPG, JPEG, or PNG files are accepted.` }));
+      e.target.value = '';
+      return;
+    }
+
+    // Check file type against allowed list
+    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+      setErrors((prev) => ({ ...prev, [fieldName]: 'Only JPG, JPEG, or PNG files are allowed. Please select a valid image format.' }));
+      e.target.value = '';
+      return;
+    }
+
+    // Check file size
     if (file.size > MAX_IMAGE_SIZE_BYTES) {
       setErrors((prev) => ({ ...prev, [fieldName]: 'Image size must be 3MB or less' }));
       e.target.value = '';
       return;
     }
 
-    if (ALLOWED_IMAGE_TYPES.includes(file.type)) {
-      setFormData((prev) => ({ ...prev, [fieldName]: file }));
-      setErrors((prev) => ({ ...prev, [fieldName]: '' }));
-    }
+    // If all validations pass, update form data
+    setFormData((prev) => ({ ...prev, [fieldName]: file }));
+    setErrors((prev) => ({ ...prev, [fieldName]: '' }));
   };
 
   const validate = () => {
@@ -230,6 +251,7 @@ export function ContactInfoForm({ onSubmit, onBack, initialData = {}, profileTyp
             <label className="block text-sm font-medium text-gray-800 mb-2">
               Your Photo <span className="text-red-500">*</span>
             </label>
+            <p className="text-xs text-gray-500 mb-2">Allowed formats: JPG, JPEG, PNG (Max 3MB)</p>
             {formData.photo && !(formData.photo instanceof File) && (
               <div className="mb-3 flex gap-3">
                 <img src={getFullImageUrl(formData.photo)} alt="Current photo" className="w-24 h-24 rounded-lg object-cover border border-gray-200" />
@@ -260,6 +282,7 @@ export function ContactInfoForm({ onSubmit, onBack, initialData = {}, profileTyp
             <label className="block text-sm font-medium text-gray-800 mb-2">
               Organization Logo <span className="text-red-500">*</span>
             </label>
+            <p className="text-xs text-gray-500 mb-2">Allowed formats: JPG, JPEG, PNG (Max 3MB)</p>
             {formData.companyLogo && !(formData.companyLogo instanceof File) && (
               <div className="mb-3 flex gap-3">
                 <img src={getFullImageUrl(formData.companyLogo)} alt="Current logo" className="w-24 h-24 rounded-lg object-cover border border-gray-200" />

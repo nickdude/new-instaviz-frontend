@@ -173,6 +173,15 @@ export default function RegisterPage() {
       title="Create your account"
       subtitle="Save your digital card so you can share it, edit it, and access it anytime"
     >
+      <div className="mb-4">
+        <button
+          type="button"
+          onClick={() => router.push('/')}
+          className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+        >
+          &larr; Back to Home
+        </button>
+      </div>
       {formError && <Alert type="error" message={formError} />}
       {successMessage && <Alert type="success" message={successMessage} />}
       {!formError && error && <Alert type="error" message={error} />}

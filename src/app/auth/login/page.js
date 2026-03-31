@@ -147,6 +147,15 @@ export default function LoginPage() {
       title="Welcome back"
       subtitle="Sign in to your account to continue"
     >
+      <div className="mb-4">
+        <button
+          type="button"
+          onClick={() => router.push('/')}
+          className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+        >
+          &larr; Back to Home
+        </button>
+      </div>
       {(formError || error) && (
         <Alert type="error" message={formError || error} />
       )}

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { exportOrdersToExcel } from '@/utils/exportExcel';
 import {
   Search,
   Filter,
@@ -46,6 +47,8 @@ export default function OrdersPage() {
   const [showStatusModal, setShowStatusModal] = useState(false);
   const [statusInput, setStatusInput] = useState('');
   const [adminNotes, setAdminNotes] = useState('');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
 
   const { getOrders, getOrderStats, updateOrderStatus, deleteOrder } = useOrders();
 
@@ -82,7 +85,19 @@ export default function OrdersPage() {
     const matchesStatus = filterStatus === 'all' || order.status === filterStatus;
     const matchesCardType = filterCardType === 'all' || order.cardType === filterCardType;
 
-    return matchesSearch && matchesStatus && matchesCardType;
+    // Date filter
+    let matchesDate = true;
+    if (startDate) {
+      matchesDate = matchesDate && new Date(order.createdAt) >= new Date(startDate);
+    }
+    if (endDate) {
+      // Add 1 day to endDate to include the end date fully
+      const end = new Date(endDate);
+      end.setDate(end.getDate() + 1);
+      matchesDate = matchesDate && new Date(order.createdAt) < end;
+    }
+
+    return matchesSearch && matchesStatus && matchesCardType && matchesDate;
   });
 
   const handleStatusUpdate = async () => {
@@ -198,7 +213,7 @@ export default function OrdersPage() {
         )}
 
         {/* Filters and Search */}
-        <div className="mb-6 flex flex-col md:flex-row gap-4">
+        <div className="mb-6 flex flex-col md:flex-row gap-4 items-end">
           <div className="flex-1 relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
             <Input
@@ -235,6 +250,42 @@ export default function OrdersPage() {
               <option value="physical">Physical</option>
               <option value="NFC">NFC</option>
             </select>
+          </div>
+
+          {/* Date Range Filter */}
+          <div className="flex gap-2">
+            <div>
+              <label className="block text-xs text-gray-500 mb-1">Start Date</label>
+              <input
+                type="date"
+                value={startDate}
+                onChange={e => setStartDate(e.target.value)}
+                className="px-2 py-1 border border-gray-300 rounded-lg text-sm text-gray-700 bg-white"
+              />
+            </div>
+            <div>
+              <label className="block text-xs text-gray-500 mb-1">End Date</label>
+              <input
+                type="date"
+                value={endDate}
+                onChange={e => setEndDate(e.target.value)}
+                className="px-2 py-1 border border-gray-300 rounded-lg text-sm text-gray-700 bg-white"
+              />
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              className="self-end"
+              onClick={() => {
+                if (startDate && endDate && new Date(endDate) < new Date(startDate)) {
+                  alert('End date should be greater than or equal to start date.');
+                  return;
+                }
+                exportOrdersToExcel(filteredOrders);
+              }}
+            >
+              <Download className="w-4 h-4 mr-1 inline" /> Download Excel
+            </Button>
           </div>
         </div>
 

@@ -46,8 +46,8 @@ export default function Footer() {
 
             <div className='mt-4'>
               <h1 className='text-black font-bold text-sm leading-5 mb-2'>Contact</h1>
-              <p className='text-black font-inter text-sm leading-5 underline'>info@instaviz.me</p>
-              <p className='text-black font-inter text-sm leading-5 underline'>support@instaviz.me</p>
+              <a href="mailto:info@instaviz.me" className='text-black font-inter text-sm leading-5 underline'>info@instaviz.me</a><br />
+              <a href="mailto:support@instaviz.me" className='text-black font-inter text-sm leading-5 underline'>support@instaviz.me</a>
             </div>
 
             <div className="flex space-x-4 items-start text-xl sm:text-2xl text-black mt-4">

@@ -182,23 +182,33 @@ export default function PlansPage() {
         ) : displayPlans.length === 0 ? (
           <p className="mt-10 text-center text-sm text-gray-500">No plans available.</p>
         ) : (
-          <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {(activeTab === 'team' ? displayPlans.slice(0, 2) : displayPlans).map((plan, index) => (
-              <PlanCard
-                key={`${plan.title}-${index}`}
-                title={plan.title}
-                price={plan.price}
-                billingNote={plan.billingNote}
-                subNote={plan.subNote}
-                badgeText={plan.badgeText}
-                cardTypes={plan.cardTypes}
-                features={plan.features}
-                currencySymbol={plan.currencySymbol || '₹'}
-                loading={purchaseLoading && activePurchaseId === plan.id}
-                onSelect={() => handlePurchase(plan)}
-              />
-            ))}
-          </div>
+          activeTab === 'team' ? (
+            <div className="mt-10 flex flex-col items-center justify-center">
+              <div className="rounded-2xl border border-blue-100 bg-blue-50 p-8 text-center max-w-xl mx-auto">
+                <h2 className="text-2xl font-semibold mb-2 text-blue-700">Team Plans</h2>
+                <p className="text-gray-700 mb-4">For team or enterprise plans, please contact us directly for a custom offer and onboarding assistance.</p>
+                <a href="mailto:support@instaviz.me" className="text-blue-600 font-medium underline">support@instaviz.me</a>
+              </div>
+            </div>
+          ) : (
+            <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {displayPlans.map((plan, index) => (
+                <PlanCard
+                  key={`${plan.title}-${index}`}
+                  title={plan.title}
+                  price={plan.price}
+                  billingNote={plan.billingNote}
+                  subNote={plan.subNote}
+                  badgeText={plan.badgeText}
+                  cardTypes={plan.cardTypes}
+                  features={plan.features}
+                  currencySymbol={plan.currencySymbol || '₹'}
+                  loading={purchaseLoading && activePurchaseId === plan.id}
+                  onSelect={() => handlePurchase(plan)}
+                />
+              ))}
+            </div>
+          )
         )}
       </div>
     </div>

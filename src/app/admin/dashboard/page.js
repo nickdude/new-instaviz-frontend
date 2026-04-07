@@ -33,8 +33,7 @@ const DUMMY_STATS = {
 
 
 
-const DUMMY_RECENT_USERS = [
-];
+// const DUMMY_RECENT_USERS = [];
 
 const DUMMY_RECENT_ORDERS = [
 ];
@@ -81,6 +80,7 @@ export default function AdminDashboardPage() {
   const [activeSubscriptions, setActiveSubscriptions] = useState(DUMMY_STATS.activeSubscriptions);
   const [totalRevenue, setTotalRevenue] = useState(DUMMY_STATS.totalRevenue);
   const [pendingOrders, setPendingOrders] = useState(DUMMY_STATS.pendingOrders);
+  const [recentUsers, setRecentUsers] = useState([]);
   const { getPlans } = useAdminPlans();
   const { getOrders, getOrderStats } = useOrders();
   const { getUsers } = useAdminUsers();
@@ -139,21 +139,23 @@ export default function AdminDashboardPage() {
         setUsersLoading(true);
         const response = await getUsers();
         const usersArray = response.data || response.users || [];
-        
         setTotalUsers(Array.isArray(usersArray) ? usersArray.length : DUMMY_STATS.totalUsers);
-        
         // Count active users (users with active status)
         const activeCount = usersArray.filter(u => u.status === 'active').length;
         setActiveSubscriptions(activeCount || DUMMY_STATS.activeSubscriptions);
-        
         // Calculate total revenue from all users
         const revenue = usersArray.reduce((sum, u) => sum + (u.revenue || 0), 0);
         setTotalRevenue(revenue || DUMMY_STATS.totalRevenue);
+
+        // Sort users by join date (createdAt descending) and take 5 most recent
+        const sortedUsers = [...usersArray].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        setRecentUsers(sortedUsers.slice(0, 5));
       } catch (error) {
         console.error('Failed to fetch users:', error);
         setTotalUsers(DUMMY_STATS.totalUsers);
         setActiveSubscriptions(DUMMY_STATS.activeSubscriptions);
         setTotalRevenue(DUMMY_STATS.totalRevenue);
+        setRecentUsers([]);
       } finally {
         setUsersLoading(false);
       }
@@ -228,7 +230,7 @@ export default function AdminDashboardPage() {
                   <CardTitle>Recent Orders</CardTitle>
                   <p className="text-xs text-gray-500 mt-1">Latest transactions</p>
                 </div>
-                <Button variant="outline" size="sm">View All</Button>
+                <Button variant="outline" size="sm" onClick={() => window.location.href = '/admin/orders'}>View All</Button>
               </CardHeader>
               <CardContent>
                 {ordersLoading ? (
@@ -332,7 +334,7 @@ export default function AdminDashboardPage() {
                 <CardTitle>Recent Users</CardTitle>
                 <p className="text-xs text-gray-500 mt-1">New registrations</p>
               </div>
-              <Button variant="outline" size="sm">View All</Button>
+              <Button variant="outline" size="sm" onClick={() => window.location.href = '/admin/users'}>View All</Button>
             </CardHeader>
             <CardContent>
               <div className="overflow-x-auto">
@@ -347,7 +349,7 @@ export default function AdminDashboardPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {DUMMY_RECENT_USERS.map((user) => (
+                    {recentUsers.map((user) => (
                       <tr
                         key={user.id}
                         className="border-b border-gray-100 hover:bg-gray-50 transition-colors"
@@ -355,16 +357,16 @@ export default function AdminDashboardPage() {
                         <td className="py-3 px-2">
                           <div className="flex items-center gap-2">
                             <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white text-xs font-medium">
-                              {user.name.charAt(0)}
+                              {user.name?.charAt(0) || '?'}
                             </div>
                             <span className="text-sm font-medium text-gray-900">{user.name}</span>
                           </div>
                         </td>
                         <td className="py-3 px-2 text-sm text-gray-600">{user.email}</td>
                         <td className="py-3 px-2">
-                          <Badge variant="outline">{user.plan}</Badge>
+                          <Badge variant="outline">{user.plan || user.planId?.title || '-'}</Badge>
                         </td>
-                        <td className="py-3 px-2 text-sm text-gray-600">{user.joinDate}</td>
+                        <td className="py-3 px-2 text-sm text-gray-600">{user.createdAt ? new Date(user.createdAt).toLocaleDateString() : '-'}</td>
                         <td className="py-3 px-2">
                           <Badge
                             variant={user.status === 'active' ? 'default' : 'secondary'}

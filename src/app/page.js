@@ -1,3 +1,4 @@
+
 'use client';
 
 import Benefit from "@/components/Benefit";
@@ -8,53 +9,30 @@ import { PlanCard } from "@/components/PlanCard";
 import Products from "@/components/Products";
 import TrustedBy from "@/components/TrustedBy";
 import Why from "@/components/Why";
+import { useEffect, useState } from "react";
+import { usePlans } from "@/hooks/usePlans";
 import { useRouter } from "next/navigation";
-
-const SAMPLE_PLANS = [
-    {
-        "_id": "6914d180e1514234b360e8db",
-        "title": "Annually",
-        "price": 399,
-        "subtitle": "only digital card",
-        "duration": 365,
-        "createdAt": "2025-11-12T18:27:12.867Z",
-        "updatedAt": "2025-12-06T13:40:19.157Z",
-        "__v": 0
-    },
-    {
-        "_id": "6914d18ee1514234b360e8de",
-        "title": "Annually",
-        "price": 749,
-        "subtitle": "digital + plastic card",
-        "duration": 365,
-        "createdAt": "2025-11-12T18:27:26.135Z",
-        "updatedAt": "2025-12-06T13:40:33.711Z",
-        "__v": 0
-    },
-    {
-        "_id": "6914d198e1514234b360e8e1",
-        "title": "Annually",
-        "price": 1599,
-        "subtitle": "digital + metal card",
-        "duration": 365,
-        "createdAt": "2025-11-12T18:27:36.436Z",
-        "updatedAt": "2025-12-06T13:40:47.532Z",
-        "__v": 0
-    },
-    {
-        "_id": "6914d1a2e1514234b360e8e4",
-        "title": "Annually",
-        "price": 9000,
-        "subtitle": "digital + NFC card",
-        "duration": 365,
-        "createdAt": "2025-11-12T18:27:46.189Z",
-        "updatedAt": "2025-12-06T13:41:00.955Z",
-        "__v": 0
-    }
-]
 
 export default function Home() {
   const router = useRouter();
+  const { getPlans } = usePlans();
+  const [plans, setPlans] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadPlans = async () => {
+      try {
+        const response = await getPlans(true);
+        const data = response?.data || [];
+        setPlans(data);
+      } catch (err) {
+        setPlans([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadPlans();
+  }, [getPlans]);
 
   return (
     <>
@@ -70,16 +48,22 @@ export default function Home() {
 
           <div className="mt-4 w-full">
             <div className="flex items-start justify-start gap-6 py-4 md:py-10 overflow-x-auto md:overflow-visible md:grid md:grid-cols-4 md:justify-between">
-              {SAMPLE_PLANS.map((plan) => (
-                <div key={plan._id} className="shrink-0 min-w-[260px] md:min-w-0">
-                  <PlanCard
-                    title={plan.title}
-                    price={plan.price}
-                    subNote={plan.subtitle}
-                    onSelect={() => router.push('/my-card')}
-                  />
-                </div>
-              ))}
+              {loading ? (
+                <div className="col-span-4 flex justify-center items-center w-full h-40 text-gray-400">Loading...</div>
+              ) : plans.length === 0 ? (
+                <div className="col-span-4 flex justify-center items-center w-full h-40 text-gray-400">No plans available.</div>
+              ) : (
+                plans.map((plan) => (
+                  <div key={plan._id} className="shrink-0 min-w-[260px] md:min-w-0">
+                    <PlanCard
+                      title={plan.title}
+                      price={plan.price?.rupees ?? plan.price?.dollar ?? plan.price}
+                      subNote={plan.description || plan.subtitle}
+                      onSelect={() => router.push('/my-card')}
+                    />
+                  </div>
+                ))
+              )}
             </div>
           </div>
         </div>

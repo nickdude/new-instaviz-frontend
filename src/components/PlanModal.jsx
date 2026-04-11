@@ -178,7 +178,7 @@ export function PlanModal({ isOpen, onClose, onSubmit, plan = null, loading = fa
                 {[
                   { value: 'physical', label: 'Physical Card', color: 'orange' },
                   { value: 'digital', label: 'Digital Card', color: 'blue' },
-                  { value: 'NFC', label: 'NFC Card', color: 'purple' }
+                  // { value: 'NFC', label: 'NFC Card', color: 'purple' }
                 ].map((type) => {
                   const isSelected = formData.cardTypes.includes(type.value);
                   const colorClasses = {

@@ -20,6 +20,10 @@ export function FormInput({
   const inputType = isPasswordField && showPassword ? 'text' : type;
   const inputPaddingClass = Icon ? 'pl-12' : 'pl-4';
 
+  // For number fields: show 0 as default, but clear on focus if value is 0
+  const [isFocused, setIsFocused] = useState(false);
+  const displayValue = type === 'number' && !isFocused && (value === 0 || value === '0') ? '0' : (value === 0 && isFocused ? '' : value);
+
   return (
     <div className="w-full">
       {label && (
@@ -37,7 +41,9 @@ export function FormInput({
         <input
           type={inputType}
           placeholder={placeholder}
-          value={value}
+          value={displayValue}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
           onChange={onChange}
           disabled={disabled}
           className={`w-full px-4 py-3 ${inputPaddingClass} border border-gray-200 rounded-lg text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${

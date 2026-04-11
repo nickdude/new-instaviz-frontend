@@ -9,13 +9,15 @@ import {
   Eye,
   MoreHorizontal,
   ArrowUpRight,
-  ArrowDownRight
+  ArrowDownRight,
+  Download
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useAdminPlans } from '@/hooks/useAdminPlans';
 import { useOrders } from '@/hooks/useOrders';
+import { exportOrdersToExcel } from '@/utils/exportExcel';
 import { useAdminUsers } from '@/hooks/useAdminUsers';
 import { useSubscriptions } from '@/hooks/useSubscriptions';
 
@@ -81,6 +83,9 @@ export default function AdminDashboardPage() {
   const [totalRevenue, setTotalRevenue] = useState(DUMMY_STATS.totalRevenue);
   const [pendingOrders, setPendingOrders] = useState(DUMMY_STATS.pendingOrders);
   const [recentUsers, setRecentUsers] = useState([]);
+  // For dashboard download button
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
   const { getPlans } = useAdminPlans();
   const { getOrders, getOrderStats } = useOrders();
   const { getUsers } = useAdminUsers();
@@ -178,10 +183,52 @@ export default function AdminDashboardPage() {
   return (
     <div className="flex-1 overflow-auto">
       <div className="p-8">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-          <p className="text-sm text-gray-500 mt-1">Welcome back! Here's your business overview.</p>
+        {/* Header with Download Excel button and date filters */}
+        <div className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
+            <p className="text-sm text-gray-500 mt-1">Welcome back! Here's your business overview.</p>
+          </div>
+          <div className="flex flex-col md:flex-row gap-2 items-end md:items-center">
+            {/* <div>
+              <label className="block text-xs text-gray-500 mb-1">Start Date</label>
+              <input
+                type="date"
+                value={startDate}
+                onChange={e => setStartDate(e.target.value)}
+                className="px-2 py-1 border border-gray-300 rounded-lg text-sm text-gray-700 bg-white"
+              />
+            </div>
+            <div>
+              <label className="block text-xs text-gray-500 mb-1">End Date</label>
+              <input
+                type="date"
+                value={endDate}
+                onChange={e => setEndDate(e.target.value)}
+                className="px-2 py-1 border border-gray-300 rounded-lg text-sm text-gray-700 bg-white"
+              />
+            </div> */}
+            <Button
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-2 mt-2 md:mt-0"
+              onClick={async () => {
+                if (startDate && endDate && new Date(endDate) < new Date(startDate)) {
+                  alert('End date should be greater than or equal to start date.');
+                  return;
+                }
+                try {
+                  const res = await getOrders({ startDate, endDate });
+                  const ordersData = res.data || res.orders || [];
+                  exportOrdersToExcel(ordersData, 'orders-report.xlsx');
+                } catch (err) {
+                  alert('Failed to download orders report.');
+                }
+              }}
+            >
+              <Download className="w-4 h-4 mr-1" /> Download Excel
+            </Button>
+          </div>
         </div>
 
         {/* Stats Grid */}

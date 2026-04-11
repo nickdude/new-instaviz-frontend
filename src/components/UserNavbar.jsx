@@ -105,7 +105,12 @@ export function UserNavbar() {
         <nav className="hidden md:flex items-center gap-2">
           {staticNavItems.map((item) => {
             const Icon = item.icon;
-            const isActive = pathname?.startsWith(item.href);
+            let isActive = false;
+            if (item.href === '/my-card') {
+              isActive = pathname === '/my-card';
+            } else {
+              isActive = pathname?.startsWith(item.href);
+            }
             return (
               <Link
                 key={item.href}
@@ -126,7 +131,9 @@ export function UserNavbar() {
             disabled={!cardId}
             className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition ${
               cardId
-                ? 'text-gray-600 hover:bg-gray-100 cursor-pointer'
+                ? (pathname?.startsWith('/my-card/edit')
+                    ? 'bg-blue-50 text-blue-700'
+                    : 'text-gray-600 hover:bg-gray-100 cursor-pointer')
                 : 'text-gray-400 cursor-not-allowed'
             }`}
           >
@@ -138,7 +145,9 @@ export function UserNavbar() {
             disabled={!profileId}
             className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition ${
               profileId
-                ? 'text-gray-600 hover:bg-gray-100 cursor-pointer'
+                ? (pathname?.startsWith('/profile/edit')
+                    ? 'bg-blue-50 text-blue-700'
+                    : 'text-gray-600 hover:bg-gray-100 cursor-pointer')
                 : 'text-gray-400 cursor-not-allowed'
             }`}
           >
@@ -161,7 +170,12 @@ export function UserNavbar() {
           <nav className="flex flex-col gap-2">
             {staticNavItems.map((item) => {
               const Icon = item.icon;
-              const isActive = pathname?.startsWith(item.href);
+              let isActive = false;
+              if (item.href === '/my-card') {
+                isActive = pathname === '/my-card';
+              } else {
+                isActive = pathname?.startsWith(item.href);
+              }
               return (
                 <Link
                   key={item.href}
@@ -184,7 +198,9 @@ export function UserNavbar() {
               disabled={!cardId}
               className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition ${
                 cardId
-                  ? 'text-gray-600 hover:bg-gray-100 cursor-pointer'
+                  ? (pathname?.startsWith('/my-card/edit')
+                      ? 'bg-blue-50 text-blue-700'
+                      : 'text-gray-600 hover:bg-gray-100 cursor-pointer')
                   : 'text-gray-400 cursor-not-allowed'
               }`}
             >
@@ -197,7 +213,9 @@ export function UserNavbar() {
               disabled={!profileId}
               className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition ${
                 profileId
-                  ? 'text-gray-600 hover:bg-gray-100 cursor-pointer'
+                  ? (pathname?.startsWith('/profile/edit')
+                      ? 'bg-blue-50 text-blue-700'
+                      : 'text-gray-600 hover:bg-gray-100 cursor-pointer')
                   : 'text-gray-400 cursor-not-allowed'
               }`}
             >

@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { FaStar } from 'react-icons/fa';
-import heroImage from '../assets/hero.svg';
+import heroImage from '../assets/hero.png';
 import BlackButton from './buttons/BlackButton';
 import BlueButton from './buttons/BlueButton';
 import reviewer1 from '../assets/reviewer1.svg';

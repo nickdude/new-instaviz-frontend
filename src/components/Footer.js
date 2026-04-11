@@ -51,7 +51,7 @@ export default function Footer() {
             </div>
 
             <div className="flex space-x-4 items-start text-xl sm:text-2xl text-black mt-4">
-              <a href="https://www.facebook.com/instavizdigital" target="_blank" rel="noopener noreferrer" className="hover:text-blue-600 transition-colors"><FaFacebookF /></a>
+              <a href="https://www.facebook.com/Instaviz.me" target="_blank" rel="noopener noreferrer" className="hover:text-blue-600 transition-colors"><FaFacebookF /></a>
               <a href="https://www.instagram.com/insta_viz/" target="_blank" rel="noopener noreferrer" className="hover:text-pink-500 transition-colors"><FaInstagram /></a>
               <a href="https://www.linkedin.com/company/instavizofficial" target="_blank" rel="noopener noreferrer" className="hover:text-blue-700 transition-colors"><FaLinkedinIn /></a>
               <a href="https://www.youtube.com/@Instaviz" target="_blank" rel="noopener noreferrer" className="hover:text-red-600 transition-colors"><FaYoutube /></a>

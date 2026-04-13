@@ -39,6 +39,7 @@ export default function Home() {
       <HomeNavbar/>
       <HeroSection />
       <Why />
+       <Products/>
       <section id="plans" className="w-full bg-gray-100 flex items-start justify-center py-16 px-4">
         <div className="max-w-screen-xl w-full mx-auto">
           <div className="text-center mb-4">
@@ -68,7 +69,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-      <Products/>
       <TrustedBy/>
         <Benefit/>
       <Footer/>

@@ -22,7 +22,7 @@ export default function ProductCard({ product }) {
     <div className="mt-4 sm:mt-6 lg:mt-8 flex items-center justify-center" onClick={handleClick}>
       <div className="w-full max-w-xs sm:max-w-sm lg:w-64 bg-darkGrey rounded-xl flex flex-col items-center justify-center gap-2 cursor-pointer hover:shadow-custom transition-transform hover:scale-105 equal-height-card h-full">
         <img
-          src={`/cards/${product.image}`}
+          src={`/${product.image}`}
           alt={product.name}
           className="w-full h-48 sm:h-56 lg:h-64 rounded-t-xl object-cover"
         />

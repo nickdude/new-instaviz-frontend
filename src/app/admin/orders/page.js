@@ -248,7 +248,7 @@ export default function OrdersPage() {
               <option value="all">All Card Types</option>
               <option value="digital">Digital</option>
               <option value="physical">Physical</option>
-              <option value="NFC">NFC</option>
+              {/* <option value="NFC">NFC</option> */}
             </select>
           </div>
 

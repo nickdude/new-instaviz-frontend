@@ -19,14 +19,16 @@ export function PlanCard({
   currencySymbol = '₹',
   loading = false,
 }) {
+  // Truncate description to 300 chars
+  const desc = (subNote || description || '').slice(0, 300);
   return (
-    <div className="w-full rounded-2xl border border-gray-200 bg-white shadow-sm hover:shadow-md transition-shadow overflow-hidden flex flex-col h-full">
+    <div className="w-[80vw] md:w-full rounded-2xl border border-gray-200 bg-white shadow-sm hover:shadow-md transition-shadow overflow-hidden flex flex-col h-full min-h-[40px] md:min-h-[40px]">
       <div className="p-6 flex-1 flex flex-col">
         {/* Header with title and badge */}
         <div className="flex items-start justify-between gap-3 mb-4">
           <div className="flex-1">
             <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
-            {subNote && <p className="mt-1 text-xs text-gray-500">{subNote}</p>}
+            {desc && <p className="mt-1 text-xs text-gray-500 min-h-[63px] line-clamp-4">{desc}{(subNote || description || '').length > 300 ? '...' : ''}</p>}
           </div>
           {badgeText && <Badge className="bg-green-100 text-green-700 text-xs font-medium whitespace-nowrap">{badgeText}</Badge>}
         </div>
@@ -83,7 +85,7 @@ export function PlanCard({
       </div>
 
       {/* Button */}
-      <div className="px-6 pb-6">
+      <div className="px-6 pb-6 mt-auto">
         <FormButton type="button" onClick={onSelect} loading={loading} className="rounded-xl w-full">
           {buttonText}
         </FormButton>

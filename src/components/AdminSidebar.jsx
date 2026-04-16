@@ -102,7 +102,7 @@ export function AdminSidebar() {
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
+          <nav className="px-4 py-6 space-y-2 overflow-y-auto">
             {ADMIN_NAVIGATION.map((item) => {
               const Icon = item.icon;
               const active = isActive(item.href);

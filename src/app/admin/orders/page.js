@@ -202,7 +202,7 @@ export default function OrdersPage() {
             <Card>
               <CardContent className="pt-6">
                 <div className="flex flex-col gap-2">
-                  <p className="text-sm text-gray-600">Physical/NFC Orders</p>
+                  <p className="text-sm text-gray-600">Physical</p>
                   <p className="text-3xl font-bold text-gray-900">
                     {Array.isArray(stats?.cardTypeBreakdown) ? (stats.cardTypeBreakdown?.filter(c => c._id !== 'digital').reduce((sum, c) => sum + c.count, 0) || 0) : 0}
                   </p>
@@ -213,22 +213,22 @@ export default function OrdersPage() {
         )}
 
         {/* Filters and Search */}
-        <div className="mb-6 flex flex-col md:flex-row gap-4 items-end">
-          <div className="flex-1 relative">
+        <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-end md:gap-4 w-full">
+          <div className="flex-1 relative min-w-0">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
             <Input
               placeholder="Search by Order ID, User name, or Email..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
+              className="pl-10 w-full"
             />
           </div>
 
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2 w-full md:w-auto">
             <select
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 bg-white hover:bg-gray-50"
+              className="px-4 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 bg-white hover:bg-gray-50 w-full md:w-auto"
             >
               <option value="all">All Status</option>
               <option value="Order Pending">Order Pending</option>
@@ -243,7 +243,7 @@ export default function OrdersPage() {
             <select
               value={filterCardType}
               onChange={(e) => setFilterCardType(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 bg-white hover:bg-gray-50"
+              className="px-4 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 bg-white hover:bg-gray-50 w-full md:w-auto"
             >
               <option value="all">All Card Types</option>
               <option value="digital">Digital</option>
@@ -253,14 +253,14 @@ export default function OrdersPage() {
           </div>
 
           {/* Date Range Filter */}
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2 w-full md:w-auto">
             <div>
               <label className="block text-xs text-gray-500 mb-1">Start Date</label>
               <input
                 type="date"
                 value={startDate}
                 onChange={e => setStartDate(e.target.value)}
-                className="px-2 py-1 border border-gray-300 rounded-lg text-sm text-gray-700 bg-white"
+                className="px-2 py-1 border border-gray-300 rounded-lg text-sm text-gray-700 bg-white w-full"
               />
             </div>
             <div>
@@ -269,13 +269,13 @@ export default function OrdersPage() {
                 type="date"
                 value={endDate}
                 onChange={e => setEndDate(e.target.value)}
-                className="px-2 py-1 border border-gray-300 rounded-lg text-sm text-gray-700 bg-white"
+                className="px-2 py-1 border border-gray-300 rounded-lg text-sm text-gray-700 bg-white w-full"
               />
             </div>
             <Button
               variant="outline"
               size="sm"
-              className="self-end"
+              className="self-end w-full md:w-auto"
               onClick={() => {
                 if (startDate && endDate && new Date(endDate) < new Date(startDate)) {
                   alert('End date should be greater than or equal to start date.');

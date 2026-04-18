@@ -202,7 +202,7 @@ export default function OrdersPage() {
             <Card>
               <CardContent className="pt-6">
                 <div className="flex flex-col gap-2">
-                  <p className="text-sm text-gray-600">Physical</p>
+                  <p className="text-sm text-gray-600">Physical Orders</p>
                   <p className="text-3xl font-bold text-gray-900">
                     {Array.isArray(stats?.cardTypeBreakdown) ? (stats.cardTypeBreakdown?.filter(c => c._id !== 'digital').reduce((sum, c) => sum + c.count, 0) || 0) : 0}
                   </p>
@@ -254,22 +254,22 @@ export default function OrdersPage() {
 
           {/* Date Range Filter */}
           <div className="flex flex-wrap gap-2 w-full md:w-auto">
-            <div>
+            <div className="flex-1 min-w-0 basis-0">
               <label className="block text-xs text-gray-500 mb-1">Start Date</label>
               <input
                 type="date"
                 value={startDate}
                 onChange={e => setStartDate(e.target.value)}
-                className="px-2 py-1 border border-gray-300 rounded-lg text-sm text-gray-700 bg-white w-full"
+                className="px-2 py-1 border border-gray-300 rounded-lg text-sm text-gray-700 bg-white w-full min-w-0"
               />
             </div>
-            <div>
+            <div className="flex-1 min-w-0 basis-0">
               <label className="block text-xs text-gray-500 mb-1">End Date</label>
               <input
                 type="date"
                 value={endDate}
                 onChange={e => setEndDate(e.target.value)}
-                className="px-2 py-1 border border-gray-300 rounded-lg text-sm text-gray-700 bg-white w-full"
+                className="px-2 py-1 border border-gray-300 rounded-lg text-sm text-gray-700 bg-white w-full min-w-0"
               />
             </div>
             <Button

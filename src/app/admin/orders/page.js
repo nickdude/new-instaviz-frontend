@@ -253,29 +253,29 @@ export default function OrdersPage() {
           </div>
 
           {/* Date Range Filter */}
-          <div className="flex flex-wrap gap-2 w-full md:w-auto">
-            <div className="flex-1 min-w-0 basis-0">
+          <div className="flex flex-col gap-2 w-full md:flex-row md:flex-wrap md:w-auto">
+            <div className="w-full md:flex-1 md:min-w-0 md:basis-0">
               <label className="block text-xs text-gray-500 mb-1">Start Date</label>
               <input
                 type="date"
                 value={startDate}
                 onChange={e => setStartDate(e.target.value)}
-                className="px-2 py-1 border border-gray-300 rounded-lg text-sm text-gray-700 bg-white w-full min-w-0"
+                className="px-2 py-1 border border-gray-300 rounded-lg text-sm text-gray-700 bg-white w-full"
               />
             </div>
-            <div className="flex-1 min-w-0 basis-0">
+            <div className="w-full md:flex-1 md:min-w-0 md:basis-0">
               <label className="block text-xs text-gray-500 mb-1">End Date</label>
               <input
                 type="date"
                 value={endDate}
                 onChange={e => setEndDate(e.target.value)}
-                className="px-2 py-1 border border-gray-300 rounded-lg text-sm text-gray-700 bg-white w-full min-w-0"
+                className="px-2 py-1 border border-gray-300 rounded-lg text-sm text-gray-700 bg-white w-full"
               />
             </div>
             <Button
               variant="outline"
               size="sm"
-              className="self-end w-full md:w-auto"
+              className="w-full md:w-auto md:self-end"
               onClick={() => {
                 if (startDate && endDate && new Date(endDate) < new Date(startDate)) {
                   alert('End date should be greater than or equal to start date.');

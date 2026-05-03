@@ -14,6 +14,25 @@ export default function PlansPage() {
   const [activeTab, setActiveTab] = useState('individual');
   const [paymentError, setPaymentError] = useState('');
   const [activePurchaseId, setActivePurchaseId] = useState('');
+  const [isIndianRegion, setIsIndianRegion] = useState(null);
+
+  const detectIndianRegion = () => {
+    if (typeof navigator === 'undefined') return false;
+
+    const locale = navigator.languages?.[0] || navigator.language || Intl.DateTimeFormat().resolvedOptions().locale || '';
+    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
+
+    return (
+      locale.toUpperCase().includes('-IN') ||
+      locale.toUpperCase().endsWith('IN') ||
+      timeZone === 'Asia/Kolkata' ||
+      timeZone === 'Asia/Calcutta'
+    );
+  };
+
+  useEffect(() => {
+    setIsIndianRegion(detectIndianRegion());
+  }, []);
 
   const loadRazorpay = () => {
     if (typeof window === 'undefined') return Promise.resolve(false);
@@ -43,19 +62,22 @@ export default function PlansPage() {
   }, [getPlans]);
 
   const displayPlans = useMemo(() => {
+    const priceKey = isIndianRegion ? 'rupees' : 'dollar';
+    const currencySymbol = isIndianRegion ? 'Rs' : '$';
+
     return plans.map((plan) => ({
       id: plan._id,
       title: plan.title,
-      price: plan.price?.rupees ?? plan.price?.dollar ?? '0',
+      price: plan.price?.[priceKey] ?? plan.price?.rupees ?? plan.price?.dollar ?? '0',
       billingNote: plan.durationDays ? `Billed every ${plan.durationDays} days` : '',
       subNote: plan.description,
       cardTypes: plan.cardTypes || [],
       features: plan.features || [],
       badgeText: plan.isPopular ? 'POPULAR' : '',
-      currencySymbol: '₹',
-      currency: 'rupees',
+      currencySymbol,
+      currency: priceKey,
     }));
-  }, [plans]);
+  }, [plans, isIndianRegion]);
 
   const handlePurchase = async (plan) => {
     setPaymentError('');
@@ -177,6 +199,12 @@ export default function PlansPage() {
           <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {Array.from({ length: 3 }).map((_, index) => (
               <div key={`skeleton-${index}`} className="h-[260px] rounded-2xl border border-gray-200 bg-white shadow-sm animate-pulse" />
+            ))}
+          </div>
+        ) : isIndianRegion === null ? (
+          <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {Array.from({ length: 3 }).map((_, index) => (
+              <div key={`region-skeleton-${index}`} className="h-[260px] rounded-2xl border border-gray-200 bg-white shadow-sm animate-pulse" />
             ))}
           </div>
         ) : displayPlans.length === 0 ? (

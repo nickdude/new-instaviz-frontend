@@ -18,6 +18,25 @@ export default function Home() {
   const { getPlans } = usePlans();
   const [plans, setPlans] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isIndianRegion, setIsIndianRegion] = useState(null);
+
+  const detectIndianRegion = () => {
+    if (typeof navigator === 'undefined') return false;
+
+    const locale = navigator.languages?.[0] || navigator.language || Intl.DateTimeFormat().resolvedOptions().locale || '';
+    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
+
+    return (
+      locale.toUpperCase().includes('-IN') ||
+      locale.toUpperCase().endsWith('IN') ||
+      timeZone === 'Asia/Kolkata' ||
+      timeZone === 'Asia/Calcutta'
+    );
+  };
+
+  useEffect(() => {
+    setIsIndianRegion(detectIndianRegion());
+  }, []);
 
   useEffect(() => {
     const loadPlans = async () => {
@@ -34,6 +53,10 @@ export default function Home() {
     loadPlans();
   }, [getPlans]);
 
+  const priceConfig = isIndianRegion
+    ? { priceKey: 'rupees', currencySymbol: 'Rs' }
+    : { priceKey: 'dollar', currencySymbol: '$' };
+
   return (
     <>
       <HomeNavbar/>
@@ -49,7 +72,7 @@ export default function Home() {
 
           <div className="mt-4 w-full">
             <div className="flex items-start justify-start gap-6 py-4 md:py-10 overflow-x-auto md:overflow-visible md:grid md:grid-cols-4 md:justify-between">
-              {loading ? (
+              {loading || isIndianRegion === null ? (
                 <div className="col-span-4 flex justify-center items-center w-full h-40 text-gray-400">Loading...</div>
               ) : plans.length === 0 ? (
                 <div className="col-span-4 flex justify-center items-center w-full h-40 text-gray-400">No plans available.</div>
@@ -58,8 +81,9 @@ export default function Home() {
                   <div key={plan._id} className="shrink-0 min-w-[260px] md:min-w-0">
                     <PlanCard
                       title={plan.title}
-                      price={plan.price?.rupees ?? plan.price?.dollar ?? plan.price}
+                      price={plan.price?.[priceConfig.priceKey] ?? plan.price?.rupees ?? plan.price?.dollar ?? plan.price}
                       subNote={plan.description || plan.subtitle}
+                      currencySymbol={priceConfig.currencySymbol}
                       onSelect={() => router.push('/my-card')}
                     />
                   </div>

@@ -37,8 +37,7 @@ export function PlanCard({
         <div className="mb-5">
           <div className="flex items-end gap-2">
             <span className="text-3xl font-bold text-gray-900">
-              {currencySymbol}
-              {price}
+              {`${currencySymbol} ${price}`}
             </span>
             {billingNote && <span className="text-xs text-gray-500 mb-1">{billingNote}</span>}
           </div>
